@@ -10,17 +10,17 @@ export class JwtService {
 
   async generateAccessToken(
     userId: string,
-    roleId: string,
     session: string,
     exp: number,
+    isSuperAdmin = false,
   ) {
     // implementation
     const payload: Payload = {
       sub: userId,
       iat: Math.floor(Date.now() / 1000),
-      exp,
-      roleId,
+      exp: Math.floor(Date.now() / 1000) + exp,
       sessionId: session,
+      isSuperAdmin,
     };
 
     const accessToken = await this.jwt.signAsync(payload);
@@ -34,6 +34,10 @@ export class JwtService {
 
   async verifyAccessToken(token: string) {
     return this.jwt.verifyAsync<Payload>(token);
+  }
+
+  async generateLocalToken() {
+    return randomString(20);
   }
 }
 

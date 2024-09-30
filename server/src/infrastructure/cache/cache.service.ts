@@ -31,10 +31,11 @@ export class CacheService {
   }
 
   async set(key: string, value: any, ttl?: number) {
-    console.log("Setting cache", key, value, ttl);
     const k = `${APP_NAME}:${key}`;
 
-    return this.cacheManager.set(k, value, { ttl });
+    return this.cacheManager.set(k, value, {
+      ttl,
+    });
   }
   async checkConnection(): Promise<boolean> {
     const testKey = "test_connection";

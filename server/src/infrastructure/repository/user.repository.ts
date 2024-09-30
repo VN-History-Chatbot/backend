@@ -24,4 +24,8 @@ export class UserRepository {
   ) {
     return this.dbCtx.user.update({ where: id, data });
   }
+
+  async getUserByEmail(email: string) {
+    return this.dbCtx.user.findFirst({ where: { email } });
+  }
 }

@@ -22,7 +22,7 @@ export const RespMessage = {
   INVALID_PARAMS: "invalid params",
 };
 
-const Ok = (resp: any, message: string = RespMessage.SUCCESS) => {
+const Ok = (resp?: any, message: string = RespMessage.SUCCESS) => {
   return {
     code: RespCode.SUCCESS,
     message,
