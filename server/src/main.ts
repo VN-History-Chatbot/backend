@@ -23,6 +23,7 @@ async function bootstrap() {
     .setTitle("API VN History Chatbot")
     .setDescription("API VN History Chatbot")
     .setVersion(APP_VERSION)
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

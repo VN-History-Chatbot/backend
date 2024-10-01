@@ -7,6 +7,7 @@ import {
   JWT_AT_EXPIRED,
   JWT_RT_EXPIRED,
 } from "@/shared/constants/env.const";
+import { DEFAULT_USER_ID, ROLE_USER } from "@/shared/constants/user.const";
 import ApiResp from "@/shared/helpers/api.helper";
 import { randomString } from "@/shared/helpers/str.helper";
 import { Injectable } from "@nestjs/common";
@@ -19,16 +20,16 @@ export class AuthService {
     private readonly _logger: LoggerService,
     private readonly _jwt: JwtService,
     private readonly _cache: CacheService,
-    private readonly _userRep: UserRepository,
+    private readonly _userRepo: UserRepository,
   ) {
     this._logger.setContext("AuthService");
   }
 
-  async generateAdminToken() {
+  async handleGenerateAdminToken() {
     const expAt = 60 * 60 * 24 * 60; // 60 days
 
     const token = await this._jwt.generateAccessToken(
-      "admin",
+      DEFAULT_USER_ID,
       "admin",
       expAt,
       true,
@@ -39,8 +40,8 @@ export class AuthService {
     return ApiResp.Ok({ token });
   }
 
-  async googleAuth() {
-    this._logger.log("[Google Auth]");
+  async handleGoogleAuth() {
+    this._logger.log("[GoogleAuth]");
 
     const localToken = await this._jwt.generateLocalToken();
 
@@ -52,14 +53,14 @@ export class AuthService {
     });
   }
 
-  async googleLogin(req: any) {
-    this._logger.log("[Google Login]");
+  async handleGoogleLogin(req: any) {
+    this._logger.log("[GoogleLogin]");
 
     const user = req.user;
     const localToken = req.query.state;
 
     if (!localToken) {
-      this._logger.error("[Google Login]: Invalid state");
+      this._logger.error("[GoogleLogin]: Invalid state");
       return ApiResp.Unauthorized("Invalid state");
     }
 
@@ -68,7 +69,7 @@ export class AuthService {
     return ApiResp.Ok(undefined, "Login success you can close this tab now");
   }
 
-  async verifyLocalToken(token: string) {
+  async handleVerifyLocalToken(token: string) {
     const user = await this._cache.get(`local-token:${token}`);
 
     if (!user) {
@@ -80,10 +81,10 @@ export class AuthService {
     const name = get(user, "firstName");
     const picture = get(user, "picture");
 
-    const u = await this._userRep.getUserByEmail(email);
+    const u = await this._userRepo.getUserByEmail(email);
 
     if (!u) {
-      const created = await this._userRep.createUser({
+      const created = await this._userRepo.createUser({
         email: email,
         fullName: name,
         avatar: picture,
@@ -91,7 +92,7 @@ export class AuthService {
         lastAccess: new Date(),
         Role: {
           connect: {
-            id: "999",
+            id: ROLE_USER,
           },
         },
       });

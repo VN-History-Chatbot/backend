@@ -1,35 +1,22 @@
-import { Controller, Get, Param, Post } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { UserRepository } from "src/infrastructure/repository/user.repository";
+import { Controller, Get, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { UserService } from "./user.service";
+import { ProtectedGuard } from "@/shared/middlewares/protected.guard";
 
 @ApiTags("Users")
 @Controller("users")
 export class UserController {
-  constructor(private readonly userRepo: UserRepository) {}
+  constructor(private readonly _service: UserService) {}
 
   @Get()
   async getUsers() {
-    return this.userRepo.getListUsers();
+    return await this._service.handleGetUsers();
   }
 
-  @Get(":id")
-  async getUserById(@Param("id") id: string) {
-    return this.userRepo.findUserById({ id });
-  }
-
-  @Post()
-  async createUser() {
-    return this.userRepo.createUser({
-      email: "test@test.gmail.com",
-      fullName: "Test User",
-      avatar: "https://picsum.photos/200",
-      isActive: true,
-      lastAccess: new Date(),
-      Role: {
-        connect: {
-          id: "999",
-        },
-      },
-    });
+  @Get("profile")
+  @ApiBearerAuth()
+  @UseGuards(ProtectedGuard)
+  async getProfile() {
+    return await this._service.handleGetProfile();
   }
 }

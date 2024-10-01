@@ -37,6 +37,15 @@ export class CacheService {
       ttl,
     });
   }
+
+  async del(key: string) {
+    return this.cacheManager.del(`${APP_NAME}:${key}`);
+  }
+
+  async clearWithPrefix(prefix: string) {
+    return this.cacheManager.del(`${APP_NAME}:${prefix}*`);
+  }
+
   async checkConnection(): Promise<boolean> {
     const testKey = "test_connection";
     const testValue = "ok";

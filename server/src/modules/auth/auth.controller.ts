@@ -17,17 +17,17 @@ export class AuthController {
 
   @Get("admin-token")
   async generateAdminToken() {
-    return await this._service.generateAdminToken();
+    return await this._service.handleGenerateAdminToken();
   }
 
   @Post("login-google")
   async loginGoogle() {
-    return await this._service.googleAuth();
+    return await this._service.handleGoogleAuth();
   }
 
   @Get("verify-token")
   async verifyToken(@Query("token") token: string) {
-    return await this._service.verifyLocalToken(token);
+    return await this._service.handleVerifyLocalToken(token);
   }
 
   @Get("google")
@@ -37,6 +37,6 @@ export class AuthController {
   @Get("google/callback")
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Request() req) {
-    return await this._service.googleLogin(req);
+    return await this._service.handleGoogleLogin(req);
   }
 }

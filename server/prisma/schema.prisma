@@ -41,14 +41,18 @@ model User {
   updatedReactions     Reaction[]     @relation("UpdatedReactions")
   createdEvents        Event[]        @relation("CreatedEvents")
   updatedEvents        Event[]        @relation("UpdatedEvents")
-  createdPersons       Person[]       @relation("CreatedPersons")
-  updatedPersons       Person[]       @relation("UpdatedPersons")
+  createdFigures       Figure[]       @relation("CreatedFigures")
+  updatedFigures       Figure[]       @relation("UpdatedFigures")
   createdArtifacts     Artifact[]     @relation("CreatedArtifacts")
   updatedArtifacts     Artifact[]     @relation("UpdatedArtifacts")
   createdPlaces        Place[]        @relation("CreatedPlaces")
   updatedPlaces        Place[]        @relation("UpdatedPlaces")
   createdTopics        Topic[]        @relation("CreatedTopics")
   updatedTopics        Topic[]        @relation("UpdatedTopics")
+  createdEras          Era[]          @relation("CreatedEras")
+  updatedEras          Era[]          @relation("UpdatedEras")
+  createdMessages      Message[]      @relation("CreatedMessages")
+  updatedMessage       Message[]      @relation("UpdatedMessages")
 }
 
 model Conversation {
@@ -62,6 +66,20 @@ model Conversation {
   updatedBy   String
   createdUser User     @relation("CreatedConversations", fields: [createdBy], references: [id])
   updatedUser User     @relation("UpdatedConversations", fields: [updatedBy], references: [id])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  content        String
+  conversationId String
+  metadata       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String
+  updatedBy      String
+
+  createdUser User @relation("CreatedMessages", fields: [createdBy], references: [id])
+  updatedUser User @relation("UpdatedMessages", fields: [updatedBy], references: [id])
 }
 
 model PricingPlan {
@@ -162,13 +180,14 @@ model Event {
   createdUser User @relation("CreatedEvents", fields: [createdBy], references: [id])
   updatedUser User @relation("UpdatedEvents", fields: [updatedBy], references: [id])
 
-  persons   Person[]
+  figures   Figure[]
   artifacts Artifact[]
   places    Place[]
   topics    Topic[]
+  eras      Era[]
 }
 
-model Person {
+model Figure {
   id        String     @id @default(cuid())
   name      String
   biography String
@@ -182,10 +201,11 @@ model Person {
   createdBy String
   updatedBy String
 
-  createdUser User @relation("CreatedPersons", fields: [createdBy], references: [id])
-  updatedUser User @relation("UpdatedPersons", fields: [updatedBy], references: [id])
+  createdUser User @relation("CreatedFigures", fields: [createdBy], references: [id])
+  updatedUser User @relation("UpdatedFigures", fields: [updatedBy], references: [id])
 
   events Event[]
+  eras   Era[]
 }
 
 model Artifact {
@@ -205,6 +225,7 @@ model Artifact {
   updatedUser User @relation("UpdatedArtifacts", fields: [updatedBy], references: [id])
 
   events Event[]
+  eras   Era[]
 }
 
 model Place {
@@ -224,6 +245,7 @@ model Place {
   updatedUser User @relation("UpdatedPlaces", fields: [updatedBy], references: [id])
 
   events Event[]
+  eras   Era[]
 }
 
 model Topic {
@@ -242,6 +264,31 @@ model Topic {
   updatedUser User @relation("UpdatedTopics", fields: [updatedBy], references: [id])
 
   events Event[]
+  eras   Era[]
+}
+
+model Era {
+  id          String     @id @default(cuid())
+  name        String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  thumbnail   String
+  status      DataStatus
+  metadata    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  createdBy   String
+  updatedBy   String
+
+  createdUser User @relation("CreatedEras", fields: [createdBy], references: [id])
+  updatedUser User @relation("UpdatedEras", fields: [updatedBy], references: [id])
+
+  events    Event[]
+  figures   Figure[]
+  artifacts Artifact[]
+  places    Place[]
+  topics    Topic[]
 }
 
 enum DataStatus {
