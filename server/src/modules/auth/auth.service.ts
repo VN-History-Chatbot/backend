@@ -1,4 +1,5 @@
 import { JwtService } from "@/core/jwt/jwt.service";
+import { LoggerService } from "@/core/log/log.service";
 import { CacheService } from "@/infrastructure/cache/cache.service";
 import { UserRepository } from "@/infrastructure/repository/user.repository";
 import {
@@ -15,10 +16,13 @@ import { get } from "lodash";
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly _logger: LoggerService,
     private readonly _jwt: JwtService,
     private readonly _cache: CacheService,
     private readonly _userRep: UserRepository,
-  ) {}
+  ) {
+    this._logger.setContext("AuthService");
+  }
 
   async generateAdminToken() {
     const expAt = 60 * 60 * 24 * 60; // 60 days
@@ -36,6 +40,8 @@ export class AuthService {
   }
 
   async googleAuth() {
+    this._logger.log("[Google Auth]");
+
     const localToken = await this._jwt.generateLocalToken();
 
     const url = `${GOOGLE_LOGIN_URL}?token=${localToken}`;
@@ -47,10 +53,13 @@ export class AuthService {
   }
 
   async googleLogin(req: any) {
+    this._logger.log("[Google Login]");
+
     const user = req.user;
     const localToken = req.query.state;
 
     if (!localToken) {
+      this._logger.error("[Google Login]: Invalid state");
       return ApiResp.Unauthorized("Invalid state");
     }
 
@@ -63,6 +72,7 @@ export class AuthService {
     const user = await this._cache.get(`local-token:${token}`);
 
     if (!user) {
+      this._logger.error("[VerifyLocalToken]: Invalid token");
       return ApiResp.Unauthorized("Invalid token");
     }
 
@@ -87,9 +97,9 @@ export class AuthService {
       });
 
       if (!created) {
-        {
-          return ApiResp.InternalServerError("Failed to create user");
-        }
+        this._logger.error("[VerifyLocalToken]: Failed to create user");
+
+        return ApiResp.InternalServerError("Failed to create user");
       }
 
       u.id = created.id;
@@ -112,6 +122,7 @@ export class AuthService {
     const now = new Date().getTime();
     const atExpAt = now + JWT_AT_EXPIRED * 60 * 1000;
     const rtExpAt = now + JWT_RT_EXPIRED * 60 * 1000;
+
     return ApiResp.Ok({
       accessToken: atk,
       refreshToken: rtk,
