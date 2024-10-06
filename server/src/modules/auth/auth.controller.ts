@@ -2,13 +2,15 @@ import {
   Controller,
   Get,
   UseGuards,
-  Request,
   Query,
   Post,
+  Request,
+  Body,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ApiTags } from "@nestjs/swagger";
 import { GoogleOAuthGuard } from "@/core/oauth/google.guard";
+import { GetRefreshTokenDto } from "./dtos/refresh-token.dto";
 
 @ApiTags("Auth")
 @Controller("api/v1/auth")
@@ -38,5 +40,15 @@ export class AuthController {
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Request() req) {
     return await this._service.handleGoogleLogin(req);
+  }
+
+  @Post("refresh-token")
+  async refreshToken(@Body() token: GetRefreshTokenDto) {
+    return await this._service.handleRefreshToken(token);
+  }
+
+  @Post("force-logout")
+  async forceLogout(@Query("userId") userId: string) {
+    return await this._service.handleForceLogout(userId);
   }
 }

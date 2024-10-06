@@ -1,13 +1,17 @@
+import { Payload } from "@/core/jwt/payload";
 import { LoggerService } from "@/core/log/log.service";
 import { CacheService } from "@/infrastructure/cache/cache.service";
 import { UserRepository } from "@/infrastructure/repository/user.repository";
 
 import ApiResp from "@/shared/helpers/api.helper";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { REQUEST } from "@nestjs/core";
+import { get } from "lodash";
 
 @Injectable()
 export class UserService {
   constructor(
+    @Inject(REQUEST) private readonly httpReq: Request,
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _userRepo: UserRepository,
@@ -36,6 +40,19 @@ export class UserService {
   async handleGetProfile() {
     this._logger.log("[GetProfile]");
 
-    return ApiResp.Ok();
+    // Get user payload from request
+    const payload = get(this.httpReq, "user") as Payload;
+
+    if (!payload) {
+      this._logger.error("[GetProfile] Payload is empty");
+
+      return ApiResp.Unauthorized();
+    }
+
+    const user = await this._userRepo.findUserById({ id: payload.sub });
+
+    return ApiResp.Ok({
+      user,
+    });
   }
 }

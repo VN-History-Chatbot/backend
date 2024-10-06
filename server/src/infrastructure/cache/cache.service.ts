@@ -43,7 +43,11 @@ export class CacheService {
   }
 
   async clearWithPrefix(prefix: string) {
-    return this.cacheManager.del(`${APP_NAME}:${prefix}*`);
+    return this.cacheManager.store
+      .keys(`${APP_NAME}:${prefix}*`)
+      .then((keys) => {
+        return Promise.all(keys.map((key) => this.cacheManager.del(key)));
+      });
   }
 
   async checkConnection(): Promise<boolean> {

@@ -13,6 +13,7 @@ import { randomString } from "@/shared/helpers/str.helper";
 import { Injectable } from "@nestjs/common";
 
 import { get } from "lodash";
+import { GetRefreshTokenDto } from "./dtos/refresh-token.dto";
 
 @Injectable()
 export class AuthService {
@@ -115,8 +116,11 @@ export class AuthService {
     );
 
     await this._cache.set(
-      `refresh-token:${sessionId}`,
-      rtk,
+      `rft:${u.id}:${rtk}`,
+      {
+        userId: u.id,
+        sessionId: sessionId,
+      },
       JWT_RT_EXPIRED * 60,
     );
 
@@ -125,10 +129,45 @@ export class AuthService {
     const rtExpAt = now + JWT_RT_EXPIRED * 60 * 1000;
 
     return ApiResp.Ok({
+      userId: u.id,
+      sessionId: sessionId,
       accessToken: atk,
       refreshToken: rtk,
       accessTokenExpiredAt: atExpAt,
       refreshTokenExpiredAt: rtExpAt,
     });
+  }
+
+  async handleRefreshToken({ userId, refreshToken }: GetRefreshTokenDto) {
+    const data = (await this._cache.get(`rft:${userId}:${refreshToken}`)) as {
+      userId: string;
+      sessionId: string;
+    };
+
+    if (!data) {
+      this._logger.error("[RefreshToken]: Invalid token");
+      return ApiResp.Unauthorized("Token is invalid or expired");
+    }
+
+    const atk = await this._jwt.generateAccessToken(
+      userId,
+      data.sessionId,
+      JWT_AT_EXPIRED * 60,
+      false,
+    );
+
+    const now = new Date().getTime();
+    const atExpAt = now + JWT_AT_EXPIRED * 60 * 1000;
+
+    return ApiResp.Ok({
+      accessToken: atk,
+      accessTokenExpiredAt: atExpAt,
+    });
+  }
+
+  async handleForceLogout(userId: string) {
+    await this._cache.clearWithPrefix(`rft:${userId}`);
+
+    return ApiResp.Ok();
   }
 }
