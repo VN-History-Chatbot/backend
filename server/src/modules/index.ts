@@ -5,6 +5,7 @@ import { EventModule } from "./event/event.module";
 import { FigureModule } from "./figure/figure.module";
 import { PlaceModule } from "./place/place.module";
 import { ArtifactModule } from "./artifact/artifact.module";
+import { EraModule } from "./era/era.module";
 
 export const modules = [
   PingModule,
@@ -12,6 +13,7 @@ export const modules = [
   FigureModule,
   PlaceModule,
   ArtifactModule,
+  EraModule,
   UserModule,
   AuthModule,
 ];
