@@ -41,7 +41,7 @@ export function toUpdateModel(
     location: dto.location,
     thumbnail: dto.thumbnail,
     status: dto.status,
-    metadata: dto.metadata,
+    metadata: dto?.metadata,
     updatedUser: {
       connect: {
         id: createdBy,

@@ -33,7 +33,7 @@ export function toModel(
     location: dto.location,
     thumbnail: dto.thumbnail,
     status: dto.status,
-    metadata: dto.metadata,
+    metadata: dto?.metadata,
     createdUser: {
       connect: {
         id: createdBy,

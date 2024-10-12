@@ -2,22 +2,17 @@ import { enumValuesToString, isEnumValue } from "@/shared/helpers/obj.helper";
 import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { DataStatus, Prisma } from "@prisma/client";
-import { IsDateString, IsOptional } from "class-validator";
+import { IsOptional } from "class-validator";
 
-export class UpdateFigureDto {
+export class UpdateArtifactDto {
   @ApiProperty()
   name: string;
 
   @ApiProperty()
-  biography: string;
+  description: string;
 
   @ApiProperty()
-  @IsDateString()
-  birthDate: Date;
-
-  @ApiProperty()
-  @IsDateString()
-  deathDate: Date;
+  locationFound: string;
 
   @ApiProperty()
   thumbnail: string;
@@ -31,9 +26,9 @@ export class UpdateFigureDto {
 }
 
 export function toUpdateModel(
-  dto: UpdateFigureDto,
+  dto: UpdateArtifactDto,
   createdBy: string,
-): Prisma.FigureUpdateInput {
+): Prisma.ArtifactUpdateInput {
   if (dto?.status && !isEnumValue(DataStatus, dto?.status)) {
     throw new BadRequestException(
       `${dto?.status} is not a valid status value. Valid values are ${enumValuesToString(DataStatus)}`,
@@ -42,10 +37,9 @@ export function toUpdateModel(
 
   return {
     name: dto.name,
-    biography: dto.biography,
-    birthDate: dto?.deathDate ? new Date(dto?.deathDate) : undefined,
-    deathDate: dto?.deathDate ? new Date(dto?.deathDate) : undefined,
-    thumbnail: dto?.thumbnail,
+    description: dto.description,
+    locationFound: dto.locationFound,
+    thumbnail: dto.thumbnail,
     status: dto.status,
     metadata: dto?.metadata,
     updatedUser: {
@@ -54,5 +48,5 @@ export function toUpdateModel(
       },
     },
     updatedAt: new Date(),
-  } as Prisma.FigureUpdateInput;
+  } as Prisma.ArtifactUpdateInput;
 }

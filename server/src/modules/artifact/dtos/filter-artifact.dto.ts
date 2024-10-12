@@ -7,7 +7,7 @@ import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { DataStatus, Prisma } from "@prisma/client";
 
-export class FilterPlaceDto {
+export class FilterArtifactDto {
   @ApiProperty({ required: false })
   name: string;
 
@@ -15,7 +15,7 @@ export class FilterPlaceDto {
   description: string;
 
   @ApiProperty({ required: false })
-  location: string;
+  locationFound: string;
 
   @ApiProperty({ required: false })
   thumbnail: string;
@@ -24,7 +24,9 @@ export class FilterPlaceDto {
   status: DataStatus;
 }
 
-export function toFilterModel(dto: FilterPlaceDto): Prisma.PlaceUpdateInput {
+export function toFilterModel(
+  dto: FilterArtifactDto,
+): Prisma.ArtifactUpdateInput {
   if (dto?.status && !isEnumValue(DataStatus, dto?.status)) {
     throw new BadRequestException(
       `${dto?.status} is not a valid status value. Valid values are ${enumValuesToString(DataStatus)}`,
@@ -34,10 +36,10 @@ export function toFilterModel(dto: FilterPlaceDto): Prisma.PlaceUpdateInput {
   const model = {
     name: dto?.name,
     description: dto?.description,
-    location: dto?.location,
+    locationFound: dto?.locationFound,
     thumbnail: dto?.thumbnail,
     status: dto?.status,
   };
 
-  return removeUndefinedFields(model) as Prisma.PlaceUpdateInput;
+  return removeUndefinedFields(model) as Prisma.ArtifactUpdateInput;
 }
