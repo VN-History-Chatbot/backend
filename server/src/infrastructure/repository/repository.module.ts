@@ -4,6 +4,7 @@ import { UserRepository } from "./user.repository";
 import { RoleRepository } from "./role.repository";
 import { EventRepository } from "./event.repository";
 import { FigureRepository } from "./figure.repository";
+import { PlaceRepository } from "./place.repository";
 
 @Global()
 @Module({
@@ -13,7 +14,14 @@ import { FigureRepository } from "./figure.repository";
     RoleRepository,
     EventRepository,
     FigureRepository,
+    PlaceRepository,
   ],
-  exports: [UserRepository, RoleRepository, EventRepository, FigureRepository],
+  exports: [
+    UserRepository,
+    RoleRepository,
+    EventRepository,
+    FigureRepository,
+    PlaceRepository,
+  ],
 })
 export class RepositoryModule {}
