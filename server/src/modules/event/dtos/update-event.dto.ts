@@ -1,29 +1,38 @@
+import { enumValuesToString, isEnumValue } from "@/shared/helpers/obj.helper";
+import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { DataStatus, Prisma } from "@prisma/client";
 import { IsDateString, IsOptional } from "class-validator";
 
-export class CreateEventDto {
+export class UpdateEventDto {
   @ApiProperty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
+  @IsOptional()
   brief: string;
 
   @ApiProperty()
+  @IsOptional()
   content: string;
 
   @ApiProperty()
+  @IsOptional()
   location: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   startDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   endDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   status: DataStatus;
 
   @ApiProperty()
@@ -31,10 +40,16 @@ export class CreateEventDto {
   metadata: string;
 }
 
-export function toModel(
-  dto: CreateEventDto,
+export function toUpdateModel(
+  dto: UpdateEventDto,
   createdBy: string,
-): Prisma.EventCreateInput {
+): Prisma.EventUpdateInput {
+  if (dto?.status && !isEnumValue(DataStatus, dto?.status)) {
+    throw new BadRequestException(
+      `${dto?.status} is not a valid status value. Valid values are ${enumValuesToString(DataStatus)}`,
+    );
+  }
+
   return {
     name: dto.name,
     brief: dto.brief,
@@ -44,17 +59,11 @@ export function toModel(
     endDate: dto?.endDate ? new Date(dto?.endDate) : undefined,
     status: dto.status,
     metadata: dto?.metadata,
-    createdUser: {
-      connect: {
-        id: createdBy,
-      },
-    },
     updatedUser: {
       connect: {
         id: createdBy,
       },
     },
-    createdAt: new Date(),
     updatedAt: new Date(),
-  } as Prisma.EventCreateInput;
+  } as Prisma.EventUpdateInput;
 }

@@ -1,37 +1,37 @@
 import { Payload } from "@/core/jwt/payload";
 import { LoggerService } from "@/core/log/log.service";
 import { CacheService } from "@/infrastructure/cache/cache.service";
-import { EventRepository } from "@/infrastructure/repository/event.repository";
+import { TopicRepository } from "@/infrastructure/repository/topic.repository";
 import { SortOrder } from "@/shared/enums/sort-order.enum";
 import ApiResp from "@/shared/helpers/api.helper";
 import { Inject, Injectable } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
-import { DataStatus, Prisma } from "@prisma/client";
+import { Prisma, TopicStatus } from "@prisma/client";
 import { get } from "lodash";
-import { CreateEventDto, toModel } from "./dtos/create-event.dto";
-import { toUpdateModel, UpdateEventDto } from "./dtos/update-event.dto";
+import { CreateTopicDto, toModel } from "./dtos/create-topic.dto";
+import { toUpdateModel, UpdateTopicDto } from "./dtos/update-topic.dto";
 
 @Injectable()
-export class EventService {
+export class TopicService {
   constructor(
     @Inject(REQUEST) private readonly httpReq: Request,
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
-    private readonly _eventRepo: EventRepository,
+    private readonly _topicRepo: TopicRepository,
   ) {
-    this._logger.setContext("EventServices");
+    this._logger.setContext("TopicServices");
   }
 
-  async handleGetEvents(
+  async handleGetTopics(
     page: number,
     pageSize: number,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.TopicUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
   ) {
-    this._logger.log("[GetEvents]");
+    this._logger.log("[GetTopics]");
 
-    const data = await this._eventRepo.findEvents(
+    const data = await this._topicRepo.findTopics(
       page,
       pageSize,
       filter,
@@ -44,71 +44,71 @@ export class EventService {
     });
   }
 
-  async handleGetEventById(id: string) {
-    this._logger.log("[GetEventById]");
+  async handleGetTopicById(id: string) {
+    this._logger.log("[GetTopicById]");
 
-    const event = await this._eventRepo.findEventById({ id });
+    const topic = await this._topicRepo.findTopicById({ id });
 
-    return ApiResp.Ok({ event });
+    return ApiResp.Ok({ topic });
   }
 
-  async handleCreateEvent(data: CreateEventDto) {
-    this._logger.log("[CreateEvent]");
+  async handleCreateTopic(data: CreateTopicDto) {
+    this._logger.log("[CreateTopic]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[CreateEvent] Payload is empty");
+      this._logger.error("[CreateTopic] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
     const model = toModel(data, payload.sub);
 
-    model.status = DataStatus.DRAFT;
+    model.status = TopicStatus.PENDING;
 
-    const event = await this._eventRepo.createEvent(model);
+    const topic = await this._topicRepo.createTopic(model);
 
     return ApiResp.Ok({
-      event,
+      topic,
     });
   }
 
-  async handleUpdateEvent(id: string, data: UpdateEventDto) {
-    this._logger.log("[UpdateEvent]");
+  async handleUpdateTopic(id: string, data: UpdateTopicDto) {
+    this._logger.log("[UpdateTopic]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[UpdateEvent] Payload is empty");
+      this._logger.error("[UpdateTopic] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
     const model = toUpdateModel(data, payload.sub);
 
-    const event = await this._eventRepo.updateEventById({ id }, model);
+    const topic = await this._topicRepo.updateTopicById({ id }, model);
 
     return ApiResp.Ok({
-      event,
+      topic,
     });
   }
 
-  async handleDeleteEvent(id: string) {
-    this._logger.log("[DeleteEvent]");
+  async handleDeleteTopic(id: string) {
+    this._logger.log("[DeleteTopic]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[DeleteEvent] Payload is empty");
+      this._logger.error("[DeleteTopic] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
-    const event = await this._eventRepo.deleteEventById({ id });
+    const topic = await this._topicRepo.deleteTopicById({ id });
 
     return ApiResp.Ok({
-      event,
+      topic,
     });
   }
 }

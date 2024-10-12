@@ -5,13 +5,13 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { DbService } from "../database/db.service";
 
 @Injectable()
-export class EventRepository {
+export class FigureRepository {
   constructor(private dbCtx: DbService) {}
 
-  async findEvents(
+  async findFigures(
     page: number = 1,
     pageSize: number = 10,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.FigureUpdateInput,
     sortBy: string = "updatedAt",
     sortOrder: SortOrder = SortOrder.DESC,
   ) {
@@ -27,37 +27,37 @@ export class EventRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-    } satisfies Prisma.EventFindManyArgs;
+    } satisfies Prisma.FigureFindManyArgs;
 
-    const [events, total] = await this.dbCtx.$transaction([
-      this.dbCtx.event.findMany(query),
-      this.dbCtx.event.count({ where: query.where }),
+    const [figures, total] = await this.dbCtx.$transaction([
+      this.dbCtx.figure.findMany(query),
+      this.dbCtx.figure.count({ where: query.where }),
     ]);
 
     return {
-      events: events,
+      figures: figures,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };
   }
 
-  async findEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.findFirst({ where: id });
+  async findFigureById(id: Prisma.FigureWhereUniqueInput) {
+    return this.dbCtx.figure.findFirst({ where: id });
   }
 
-  async createEvent(data: Prisma.EventCreateInput) {
-    return this.dbCtx.event.create({ data });
+  async createFigure(data: Prisma.FigureCreateInput) {
+    return this.dbCtx.figure.create({ data });
   }
 
-  async updateEventById(
-    id: Prisma.EventWhereUniqueInput,
-    data: Prisma.EventUpdateInput,
+  async updateFigureById(
+    id: Prisma.FigureWhereUniqueInput,
+    data: Prisma.FigureUpdateInput,
   ) {
-    return this.dbCtx.event.update({ where: id, data });
+    return this.dbCtx.figure.update({ where: id, data });
   }
 
-  async deleteEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.update({
+  async deleteFigureById(id: Prisma.FigureWhereUniqueInput) {
+    return this.dbCtx.figure.update({
       where: id,
       data: { status: DataStatus.DELETED },
     });

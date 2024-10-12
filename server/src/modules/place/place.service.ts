@@ -1,37 +1,37 @@
 import { Payload } from "@/core/jwt/payload";
 import { LoggerService } from "@/core/log/log.service";
 import { CacheService } from "@/infrastructure/cache/cache.service";
-import { EventRepository } from "@/infrastructure/repository/event.repository";
+import { PlaceRepository } from "@/infrastructure/repository/place.repository";
 import { SortOrder } from "@/shared/enums/sort-order.enum";
 import ApiResp from "@/shared/helpers/api.helper";
 import { Inject, Injectable } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
-import { CreateEventDto, toModel } from "./dtos/create-event.dto";
-import { toUpdateModel, UpdateEventDto } from "./dtos/update-event.dto";
+import { CreatePlaceDto, toModel } from "./dtos/create-place.dto";
+import { toUpdateModel, UpdatePlaceDto } from "./dtos/update-place.dto";
 
 @Injectable()
-export class EventService {
+export class PlaceService {
   constructor(
     @Inject(REQUEST) private readonly httpReq: Request,
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
-    private readonly _eventRepo: EventRepository,
+    private readonly _placeRepo: PlaceRepository,
   ) {
-    this._logger.setContext("EventServices");
+    this._logger.setContext("PlaceServices");
   }
 
-  async handleGetEvents(
+  async handleGetPlaces(
     page: number,
     pageSize: number,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.PlaceUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
   ) {
-    this._logger.log("[GetEvents]");
+    this._logger.log("[GetPlaces]");
 
-    const data = await this._eventRepo.findEvents(
+    const data = await this._placeRepo.findPlaces(
       page,
       pageSize,
       filter,
@@ -44,21 +44,21 @@ export class EventService {
     });
   }
 
-  async handleGetEventById(id: string) {
-    this._logger.log("[GetEventById]");
+  async handleGetPlaceById(id: string) {
+    this._logger.log("[GetPlaceById]");
 
-    const event = await this._eventRepo.findEventById({ id });
+    const place = await this._placeRepo.findPlaceById({ id });
 
-    return ApiResp.Ok({ event });
+    return ApiResp.Ok({ place });
   }
 
-  async handleCreateEvent(data: CreateEventDto) {
-    this._logger.log("[CreateEvent]");
+  async handleCreatePlace(data: CreatePlaceDto) {
+    this._logger.log("[CreatePlace]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[CreateEvent] Payload is empty");
+      this._logger.error("[CreatePlace] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
@@ -67,48 +67,48 @@ export class EventService {
 
     model.status = DataStatus.DRAFT;
 
-    const event = await this._eventRepo.createEvent(model);
+    const place = await this._placeRepo.createPlace(model);
 
     return ApiResp.Ok({
-      event,
+      place,
     });
   }
 
-  async handleUpdateEvent(id: string, data: UpdateEventDto) {
-    this._logger.log("[UpdateEvent]");
+  async handleUpdatePlace(id: string, data: UpdatePlaceDto) {
+    this._logger.log("[UpdatePlace]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[UpdateEvent] Payload is empty");
+      this._logger.error("[UpdatePlace] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
     const model = toUpdateModel(data, payload.sub);
 
-    const event = await this._eventRepo.updateEventById({ id }, model);
+    const place = await this._placeRepo.updatePlaceById({ id }, model);
 
     return ApiResp.Ok({
-      event,
+      place,
     });
   }
 
-  async handleDeleteEvent(id: string) {
-    this._logger.log("[DeleteEvent]");
+  async handleDeletePlace(id: string) {
+    this._logger.log("[DeletePlace]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[DeleteEvent] Payload is empty");
+      this._logger.error("[DeletePlace] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
-    const event = await this._eventRepo.deleteEventById({ id });
+    const place = await this._placeRepo.deletePlaceById({ id });
 
     return ApiResp.Ok({
-      event,
+      place,
     });
   }
 }

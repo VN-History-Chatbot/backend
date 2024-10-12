@@ -5,13 +5,13 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { DbService } from "../database/db.service";
 
 @Injectable()
-export class EventRepository {
+export class EraRepository {
   constructor(private dbCtx: DbService) {}
 
-  async findEvents(
+  async findEras(
     page: number = 1,
     pageSize: number = 10,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.EraUpdateInput,
     sortBy: string = "updatedAt",
     sortOrder: SortOrder = SortOrder.DESC,
   ) {
@@ -27,37 +27,37 @@ export class EventRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-    } satisfies Prisma.EventFindManyArgs;
+    } satisfies Prisma.EraFindManyArgs;
 
-    const [events, total] = await this.dbCtx.$transaction([
-      this.dbCtx.event.findMany(query),
-      this.dbCtx.event.count({ where: query.where }),
+    const [eras, total] = await this.dbCtx.$transaction([
+      this.dbCtx.era.findMany(query),
+      this.dbCtx.era.count({ where: query.where }),
     ]);
 
     return {
-      events: events,
+      eras: eras,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };
   }
 
-  async findEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.findFirst({ where: id });
+  async findEraById(id: Prisma.EraWhereUniqueInput) {
+    return this.dbCtx.era.findFirst({ where: id });
   }
 
-  async createEvent(data: Prisma.EventCreateInput) {
-    return this.dbCtx.event.create({ data });
+  async createEra(data: Prisma.EraCreateInput) {
+    return this.dbCtx.era.create({ data });
   }
 
-  async updateEventById(
-    id: Prisma.EventWhereUniqueInput,
-    data: Prisma.EventUpdateInput,
+  async updateEraById(
+    id: Prisma.EraWhereUniqueInput,
+    data: Prisma.EraUpdateInput,
   ) {
-    return this.dbCtx.event.update({ where: id, data });
+    return this.dbCtx.era.update({ where: id, data });
   }
 
-  async deleteEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.update({
+  async deleteEraById(id: Prisma.EraWhereUniqueInput) {
+    return this.dbCtx.era.update({
       where: id,
       data: { status: DataStatus.DELETED },
     });

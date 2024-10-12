@@ -1,37 +1,37 @@
 import { Payload } from "@/core/jwt/payload";
 import { LoggerService } from "@/core/log/log.service";
 import { CacheService } from "@/infrastructure/cache/cache.service";
-import { EventRepository } from "@/infrastructure/repository/event.repository";
+import { ArtifactRepository } from "@/infrastructure/repository/artifact.repository";
 import { SortOrder } from "@/shared/enums/sort-order.enum";
 import ApiResp from "@/shared/helpers/api.helper";
 import { Inject, Injectable } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
-import { CreateEventDto, toModel } from "./dtos/create-event.dto";
-import { toUpdateModel, UpdateEventDto } from "./dtos/update-event.dto";
+import { CreateArtifactDto, toModel } from "./dtos/create-artifact.dto";
+import { toUpdateModel, UpdateArtifactDto } from "./dtos/update-artifact.dto";
 
 @Injectable()
-export class EventService {
+export class ArtifactService {
   constructor(
     @Inject(REQUEST) private readonly httpReq: Request,
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
-    private readonly _eventRepo: EventRepository,
+    private readonly _artifactRepo: ArtifactRepository,
   ) {
-    this._logger.setContext("EventServices");
+    this._logger.setContext("ArtifactServices");
   }
 
-  async handleGetEvents(
+  async handleGetArtifacts(
     page: number,
     pageSize: number,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.ArtifactUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
   ) {
-    this._logger.log("[GetEvents]");
+    this._logger.log("[GetArtifacts]");
 
-    const data = await this._eventRepo.findEvents(
+    const data = await this._artifactRepo.findArtifacts(
       page,
       pageSize,
       filter,
@@ -44,21 +44,21 @@ export class EventService {
     });
   }
 
-  async handleGetEventById(id: string) {
-    this._logger.log("[GetEventById]");
+  async handleGetArtifactById(id: string) {
+    this._logger.log("[GetArtifactById]");
 
-    const event = await this._eventRepo.findEventById({ id });
+    const artifact = await this._artifactRepo.findArtifactById({ id });
 
-    return ApiResp.Ok({ event });
+    return ApiResp.Ok({ artifact });
   }
 
-  async handleCreateEvent(data: CreateEventDto) {
-    this._logger.log("[CreateEvent]");
+  async handleCreateArtifact(data: CreateArtifactDto) {
+    this._logger.log("[CreateArtifact]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[CreateEvent] Payload is empty");
+      this._logger.error("[CreateArtifact] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
@@ -67,48 +67,48 @@ export class EventService {
 
     model.status = DataStatus.DRAFT;
 
-    const event = await this._eventRepo.createEvent(model);
+    const artifact = await this._artifactRepo.createArtifact(model);
 
     return ApiResp.Ok({
-      event,
+      artifact,
     });
   }
 
-  async handleUpdateEvent(id: string, data: UpdateEventDto) {
-    this._logger.log("[UpdateEvent]");
+  async handleUpdateArtifact(id: string, data: UpdateArtifactDto) {
+    this._logger.log("[UpdateArtifact]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[UpdateEvent] Payload is empty");
+      this._logger.error("[UpdateArtifact] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
     const model = toUpdateModel(data, payload.sub);
 
-    const event = await this._eventRepo.updateEventById({ id }, model);
+    const artifact = await this._artifactRepo.updateArtifactById({ id }, model);
 
     return ApiResp.Ok({
-      event,
+      artifact,
     });
   }
 
-  async handleDeleteEvent(id: string) {
-    this._logger.log("[DeleteEvent]");
+  async handleDeleteArtifact(id: string) {
+    this._logger.log("[DeleteArtifact]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[DeleteEvent] Payload is empty");
+      this._logger.error("[DeleteArtifact] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
-    const event = await this._eventRepo.deleteEventById({ id });
+    const artifact = await this._artifactRepo.deleteArtifactById({ id });
 
     return ApiResp.Ok({
-      event,
+      artifact,
     });
   }
 }

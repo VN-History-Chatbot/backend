@@ -5,13 +5,13 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { DbService } from "../database/db.service";
 
 @Injectable()
-export class EventRepository {
+export class ArtifactRepository {
   constructor(private dbCtx: DbService) {}
 
-  async findEvents(
+  async findArtifacts(
     page: number = 1,
     pageSize: number = 10,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.ArtifactUpdateInput,
     sortBy: string = "updatedAt",
     sortOrder: SortOrder = SortOrder.DESC,
   ) {
@@ -27,37 +27,37 @@ export class EventRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-    } satisfies Prisma.EventFindManyArgs;
+    } satisfies Prisma.ArtifactFindManyArgs;
 
-    const [events, total] = await this.dbCtx.$transaction([
-      this.dbCtx.event.findMany(query),
-      this.dbCtx.event.count({ where: query.where }),
+    const [artifacts, total] = await this.dbCtx.$transaction([
+      this.dbCtx.artifact.findMany(query),
+      this.dbCtx.artifact.count({ where: query.where }),
     ]);
 
     return {
-      events: events,
+      artifacts: artifacts,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };
   }
 
-  async findEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.findFirst({ where: id });
+  async findArtifactById(id: Prisma.ArtifactWhereUniqueInput) {
+    return this.dbCtx.artifact.findFirst({ where: id });
   }
 
-  async createEvent(data: Prisma.EventCreateInput) {
-    return this.dbCtx.event.create({ data });
+  async createArtifact(data: Prisma.ArtifactCreateInput) {
+    return this.dbCtx.artifact.create({ data });
   }
 
-  async updateEventById(
-    id: Prisma.EventWhereUniqueInput,
-    data: Prisma.EventUpdateInput,
+  async updateArtifactById(
+    id: Prisma.ArtifactWhereUniqueInput,
+    data: Prisma.ArtifactUpdateInput,
   ) {
-    return this.dbCtx.event.update({ where: id, data });
+    return this.dbCtx.artifact.update({ where: id, data });
   }
 
-  async deleteEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.update({
+  async deleteArtifactById(id: Prisma.ArtifactWhereUniqueInput) {
+    return this.dbCtx.artifact.update({
       where: id,
       data: { status: DataStatus.DELETED },
     });

@@ -5,13 +5,13 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { DbService } from "../database/db.service";
 
 @Injectable()
-export class EventRepository {
+export class PlaceRepository {
   constructor(private dbCtx: DbService) {}
 
-  async findEvents(
+  async findPlaces(
     page: number = 1,
     pageSize: number = 10,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.PlaceUpdateInput,
     sortBy: string = "updatedAt",
     sortOrder: SortOrder = SortOrder.DESC,
   ) {
@@ -27,37 +27,37 @@ export class EventRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-    } satisfies Prisma.EventFindManyArgs;
+    } satisfies Prisma.PlaceFindManyArgs;
 
-    const [events, total] = await this.dbCtx.$transaction([
-      this.dbCtx.event.findMany(query),
-      this.dbCtx.event.count({ where: query.where }),
+    const [places, total] = await this.dbCtx.$transaction([
+      this.dbCtx.place.findMany(query),
+      this.dbCtx.place.count({ where: query.where }),
     ]);
 
     return {
-      events: events,
+      places: places,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };
   }
 
-  async findEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.findFirst({ where: id });
+  async findPlaceById(id: Prisma.PlaceWhereUniqueInput) {
+    return this.dbCtx.place.findFirst({ where: id });
   }
 
-  async createEvent(data: Prisma.EventCreateInput) {
-    return this.dbCtx.event.create({ data });
+  async createPlace(data: Prisma.PlaceCreateInput) {
+    return this.dbCtx.place.create({ data });
   }
 
-  async updateEventById(
-    id: Prisma.EventWhereUniqueInput,
-    data: Prisma.EventUpdateInput,
+  async updatePlaceById(
+    id: Prisma.PlaceWhereUniqueInput,
+    data: Prisma.PlaceUpdateInput,
   ) {
-    return this.dbCtx.event.update({ where: id, data });
+    return this.dbCtx.place.update({ where: id, data });
   }
 
-  async deleteEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.update({
+  async deletePlaceById(id: Prisma.PlaceWhereUniqueInput) {
+    return this.dbCtx.place.update({
       where: id,
       data: { status: DataStatus.DELETED },
     });

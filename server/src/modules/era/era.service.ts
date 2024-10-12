@@ -1,37 +1,37 @@
 import { Payload } from "@/core/jwt/payload";
 import { LoggerService } from "@/core/log/log.service";
 import { CacheService } from "@/infrastructure/cache/cache.service";
-import { EventRepository } from "@/infrastructure/repository/event.repository";
+import { EraRepository } from "@/infrastructure/repository/era.repository";
 import { SortOrder } from "@/shared/enums/sort-order.enum";
 import ApiResp from "@/shared/helpers/api.helper";
 import { Inject, Injectable } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
-import { CreateEventDto, toModel } from "./dtos/create-event.dto";
-import { toUpdateModel, UpdateEventDto } from "./dtos/update-event.dto";
+import { CreateEraDto, toModel } from "./dtos/create-era.dto";
+import { toUpdateModel, UpdateEraDto } from "./dtos/update-era.dto";
 
 @Injectable()
-export class EventService {
+export class EraService {
   constructor(
     @Inject(REQUEST) private readonly httpReq: Request,
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
-    private readonly _eventRepo: EventRepository,
+    private readonly _eraRepo: EraRepository,
   ) {
-    this._logger.setContext("EventServices");
+    this._logger.setContext("EraServices");
   }
 
-  async handleGetEvents(
+  async handleGetEras(
     page: number,
     pageSize: number,
-    filter: Prisma.EventUpdateInput,
+    filter: Prisma.EraUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
   ) {
-    this._logger.log("[GetEvents]");
+    this._logger.log("[GetEras]");
 
-    const data = await this._eventRepo.findEvents(
+    const data = await this._eraRepo.findEras(
       page,
       pageSize,
       filter,
@@ -44,21 +44,21 @@ export class EventService {
     });
   }
 
-  async handleGetEventById(id: string) {
-    this._logger.log("[GetEventById]");
+  async handleGetEraById(id: string) {
+    this._logger.log("[GetEraById]");
 
-    const event = await this._eventRepo.findEventById({ id });
+    const era = await this._eraRepo.findEraById({ id });
 
-    return ApiResp.Ok({ event });
+    return ApiResp.Ok({ era });
   }
 
-  async handleCreateEvent(data: CreateEventDto) {
-    this._logger.log("[CreateEvent]");
+  async handleCreateEra(data: CreateEraDto) {
+    this._logger.log("[CreateEra]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[CreateEvent] Payload is empty");
+      this._logger.error("[CreateEra] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
@@ -67,48 +67,48 @@ export class EventService {
 
     model.status = DataStatus.DRAFT;
 
-    const event = await this._eventRepo.createEvent(model);
+    const era = await this._eraRepo.createEra(model);
 
     return ApiResp.Ok({
-      event,
+      era,
     });
   }
 
-  async handleUpdateEvent(id: string, data: UpdateEventDto) {
-    this._logger.log("[UpdateEvent]");
+  async handleUpdateEra(id: string, data: UpdateEraDto) {
+    this._logger.log("[UpdateEra]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[UpdateEvent] Payload is empty");
+      this._logger.error("[UpdateEra] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
     const model = toUpdateModel(data, payload.sub);
 
-    const event = await this._eventRepo.updateEventById({ id }, model);
+    const era = await this._eraRepo.updateEraById({ id }, model);
 
     return ApiResp.Ok({
-      event,
+      era,
     });
   }
 
-  async handleDeleteEvent(id: string) {
-    this._logger.log("[DeleteEvent]");
+  async handleDeleteEra(id: string) {
+    this._logger.log("[DeleteEra]");
 
     // get user payload from request
     const payload = get(this.httpReq, "user") as Payload;
     if (!payload) {
-      this._logger.error("[DeleteEvent] Payload is empty");
+      this._logger.error("[DeleteEra] Payload is empty");
 
       return ApiResp.Unauthorized();
     }
 
-    const event = await this._eventRepo.deleteEventById({ id });
+    const era = await this._eraRepo.deleteEraById({ id });
 
     return ApiResp.Ok({
-      event,
+      era,
     });
   }
 }

@@ -13,15 +13,15 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { CreateEventDto } from "./dtos/create-event.dto";
-import { FilterEventDto, toFilterModel } from "./dtos/filter-event.dto";
-import { UpdateEventDto } from "./dtos/update-event.dto";
-import { EventService } from "./event.service";
+import { CreateArtifactDto } from "./dtos/create-artifact.dto";
+import { FilterArtifactDto, toFilterModel } from "./dtos/filter-artifact.dto";
+import { UpdateArtifactDto } from "./dtos/update-artifact.dto";
+import { ArtifactService } from "./artifact.service";
 
-@ApiTags("Events")
-@Controller("events")
-export class EventController {
-  constructor(private readonly _service: EventService) {}
+@ApiTags("Artifacts")
+@Controller("artifacts")
+export class ArtifactController {
+  constructor(private readonly _service: ArtifactService) {}
 
   @Get()
   @ApiQuery({
@@ -35,15 +35,15 @@ export class EventController {
     required: false,
     example: SortOrder.DESC,
   })
-  @ApiFilterQuery("filter", FilterEventDto)
-  async getEvents(
+  @ApiFilterQuery("filter", FilterArtifactDto)
+  async getArtifacts(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
-    @Query("filter") filter: FilterEventDto,
+    @Query("filter") filter: FilterArtifactDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
   ) {
-    return await this._service.handleGetEvents(
+    return await this._service.handleGetArtifacts(
       page,
       pageSize,
       toFilterModel(filter),
@@ -53,28 +53,31 @@ export class EventController {
   }
 
   @Get(":id")
-  async getEventById(@Param("id") id: string) {
-    return await this._service.handleGetEventById(id);
+  async getArtifactById(@Param("id") id: string) {
+    return await this._service.handleGetArtifactById(id);
   }
 
   @Post()
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async createEvent(@Body() data: CreateEventDto) {
-    return await this._service.handleCreateEvent(data);
+  async createArtifact(@Body() data: CreateArtifactDto) {
+    return await this._service.handleCreateArtifact(data);
   }
 
   @Put(":id")
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async updateEvent(@Param("id") id: string, @Body() data: UpdateEventDto) {
-    return await this._service.handleUpdateEvent(id, data);
+  async updateArtifact(
+    @Param("id") id: string,
+    @Body() data: UpdateArtifactDto,
+  ) {
+    return await this._service.handleUpdateArtifact(id, data);
   }
 
   @Delete(":id")
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async deleteEvent(@Param("id") id: string) {
-    return await this._service.handleDeleteEvent(id);
+  async deleteArtifact(@Param("id") id: string) {
+    return await this._service.handleDeleteArtifact(id);
   }
 }

@@ -1,29 +1,34 @@
+import { enumValuesToString, isEnumValue } from "@/shared/helpers/obj.helper";
+import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { DataStatus, Prisma } from "@prisma/client";
 import { IsDateString, IsOptional } from "class-validator";
 
-export class CreateEventDto {
+export class UpdateEraDto {
   @ApiProperty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
-  brief: string;
+  @IsOptional()
+  description: string;
 
   @ApiProperty()
-  content: string;
-
-  @ApiProperty()
-  location: string;
-
-  @ApiProperty()
+  @IsOptional()
   @IsDateString()
   startDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   endDate: Date;
 
   @ApiProperty()
+  @IsOptional()
+  thumbnail: string;
+
+  @ApiProperty()
+  @IsOptional()
   status: DataStatus;
 
   @ApiProperty()
@@ -31,30 +36,29 @@ export class CreateEventDto {
   metadata: string;
 }
 
-export function toModel(
-  dto: CreateEventDto,
+export function toUpdateModel(
+  dto: UpdateEraDto,
   createdBy: string,
-): Prisma.EventCreateInput {
+): Prisma.EraUpdateInput {
+  if (dto?.status && !isEnumValue(DataStatus, dto?.status)) {
+    throw new BadRequestException(
+      `${dto?.status} is not a valid status value. Valid values are ${enumValuesToString(DataStatus)}`,
+    );
+  }
+
   return {
     name: dto.name,
-    brief: dto.brief,
-    content: dto.content,
-    location: dto.location,
+    description: dto.description,
     startDate: dto?.startDate ? new Date(dto?.startDate) : undefined,
     endDate: dto?.endDate ? new Date(dto?.endDate) : undefined,
+    thumbnail: dto.thumbnail,
     status: dto.status,
     metadata: dto?.metadata,
-    createdUser: {
-      connect: {
-        id: createdBy,
-      },
-    },
     updatedUser: {
       connect: {
         id: createdBy,
       },
     },
-    createdAt: new Date(),
     updatedAt: new Date(),
-  } as Prisma.EventCreateInput;
+  } as Prisma.EraUpdateInput;
 }

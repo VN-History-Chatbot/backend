@@ -1,27 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { DataStatus, Prisma } from "@prisma/client";
-import { IsDateString, IsOptional } from "class-validator";
+import { IsOptional } from "class-validator";
 
-export class CreateEventDto {
+export class CreateArtifactDto {
   @ApiProperty()
   name: string;
 
   @ApiProperty()
-  brief: string;
+  description: string;
 
   @ApiProperty()
-  content: string;
+  locationFound: string;
 
   @ApiProperty()
-  location: string;
-
-  @ApiProperty()
-  @IsDateString()
-  startDate: Date;
-
-  @ApiProperty()
-  @IsDateString()
-  endDate: Date;
+  thumbnail: string;
 
   @ApiProperty()
   status: DataStatus;
@@ -32,16 +24,14 @@ export class CreateEventDto {
 }
 
 export function toModel(
-  dto: CreateEventDto,
+  dto: CreateArtifactDto,
   createdBy: string,
-): Prisma.EventCreateInput {
+): Prisma.ArtifactCreateInput {
   return {
     name: dto.name,
-    brief: dto.brief,
-    content: dto.content,
-    location: dto.location,
-    startDate: dto?.startDate ? new Date(dto?.startDate) : undefined,
-    endDate: dto?.endDate ? new Date(dto?.endDate) : undefined,
+    description: dto.description,
+    locationFound: dto.locationFound,
+    thumbnail: dto.thumbnail,
     status: dto.status,
     metadata: dto?.metadata,
     createdUser: {
@@ -56,5 +46,5 @@ export function toModel(
     },
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as Prisma.EventCreateInput;
+  } as Prisma.ArtifactCreateInput;
 }

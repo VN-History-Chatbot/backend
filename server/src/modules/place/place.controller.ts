@@ -13,15 +13,15 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { CreateEventDto } from "./dtos/create-event.dto";
-import { FilterEventDto, toFilterModel } from "./dtos/filter-event.dto";
-import { UpdateEventDto } from "./dtos/update-event.dto";
-import { EventService } from "./event.service";
+import { CreatePlaceDto } from "./dtos/create-place.dto";
+import { FilterPlaceDto, toFilterModel } from "./dtos/filter-place.dto";
+import { UpdatePlaceDto } from "./dtos/update-place.dto";
+import { PlaceService } from "./place.service";
 
-@ApiTags("Events")
-@Controller("events")
-export class EventController {
-  constructor(private readonly _service: EventService) {}
+@ApiTags("Places")
+@Controller("places")
+export class PlaceController {
+  constructor(private readonly _service: PlaceService) {}
 
   @Get()
   @ApiQuery({
@@ -35,15 +35,15 @@ export class EventController {
     required: false,
     example: SortOrder.DESC,
   })
-  @ApiFilterQuery("filter", FilterEventDto)
-  async getEvents(
+  @ApiFilterQuery("filter", FilterPlaceDto)
+  async getPlaces(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
-    @Query("filter") filter: FilterEventDto,
+    @Query("filter") filter: FilterPlaceDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
   ) {
-    return await this._service.handleGetEvents(
+    return await this._service.handleGetPlaces(
       page,
       pageSize,
       toFilterModel(filter),
@@ -53,28 +53,28 @@ export class EventController {
   }
 
   @Get(":id")
-  async getEventById(@Param("id") id: string) {
-    return await this._service.handleGetEventById(id);
+  async getPlaceById(@Param("id") id: string) {
+    return await this._service.handleGetPlaceById(id);
   }
 
   @Post()
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async createEvent(@Body() data: CreateEventDto) {
-    return await this._service.handleCreateEvent(data);
+  async createPlace(@Body() data: CreatePlaceDto) {
+    return await this._service.handleCreatePlace(data);
   }
 
   @Put(":id")
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async updateEvent(@Param("id") id: string, @Body() data: UpdateEventDto) {
-    return await this._service.handleUpdateEvent(id, data);
+  async updatePlace(@Param("id") id: string, @Body() data: UpdatePlaceDto) {
+    return await this._service.handleUpdatePlace(id, data);
   }
 
   @Delete(":id")
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async deleteEvent(@Param("id") id: string) {
-    return await this._service.handleDeleteEvent(id);
+  async deletePlace(@Param("id") id: string) {
+    return await this._service.handleDeletePlace(id);
   }
 }

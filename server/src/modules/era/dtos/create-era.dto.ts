@@ -2,18 +2,12 @@ import { ApiProperty } from "@nestjs/swagger";
 import { DataStatus, Prisma } from "@prisma/client";
 import { IsDateString, IsOptional } from "class-validator";
 
-export class CreateEventDto {
+export class CreateEraDto {
   @ApiProperty()
   name: string;
 
   @ApiProperty()
-  brief: string;
-
-  @ApiProperty()
-  content: string;
-
-  @ApiProperty()
-  location: string;
+  description: string;
 
   @ApiProperty()
   @IsDateString()
@@ -24,6 +18,9 @@ export class CreateEventDto {
   endDate: Date;
 
   @ApiProperty()
+  thumbnail: string;
+
+  @ApiProperty()
   status: DataStatus;
 
   @ApiProperty()
@@ -32,16 +29,15 @@ export class CreateEventDto {
 }
 
 export function toModel(
-  dto: CreateEventDto,
+  dto: CreateEraDto,
   createdBy: string,
-): Prisma.EventCreateInput {
+): Prisma.EraCreateInput {
   return {
     name: dto.name,
-    brief: dto.brief,
-    content: dto.content,
-    location: dto.location,
+    description: dto.description,
     startDate: dto?.startDate ? new Date(dto?.startDate) : undefined,
     endDate: dto?.endDate ? new Date(dto?.endDate) : undefined,
+    thumbnail: dto.thumbnail,
     status: dto.status,
     metadata: dto?.metadata,
     createdUser: {
@@ -56,5 +52,5 @@ export function toModel(
     },
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as Prisma.EventCreateInput;
+  } as Prisma.EraCreateInput;
 }

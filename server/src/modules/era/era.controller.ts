@@ -13,15 +13,15 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { CreateEventDto } from "./dtos/create-event.dto";
-import { FilterEventDto, toFilterModel } from "./dtos/filter-event.dto";
-import { UpdateEventDto } from "./dtos/update-event.dto";
-import { EventService } from "./event.service";
+import { CreateEraDto } from "./dtos/create-era.dto";
+import { FilterEraDto, toFilterModel } from "./dtos/filter-era.dto";
+import { UpdateEraDto } from "./dtos/update-era.dto";
+import { EraService } from "./era.service";
 
-@ApiTags("Events")
-@Controller("events")
-export class EventController {
-  constructor(private readonly _service: EventService) {}
+@ApiTags("Eras")
+@Controller("eras")
+export class EraController {
+  constructor(private readonly _service: EraService) {}
 
   @Get()
   @ApiQuery({
@@ -35,15 +35,15 @@ export class EventController {
     required: false,
     example: SortOrder.DESC,
   })
-  @ApiFilterQuery("filter", FilterEventDto)
-  async getEvents(
+  @ApiFilterQuery("filter", FilterEraDto)
+  async getEras(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
-    @Query("filter") filter: FilterEventDto,
+    @Query("filter") filter: FilterEraDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
   ) {
-    return await this._service.handleGetEvents(
+    return await this._service.handleGetEras(
       page,
       pageSize,
       toFilterModel(filter),
@@ -53,28 +53,28 @@ export class EventController {
   }
 
   @Get(":id")
-  async getEventById(@Param("id") id: string) {
-    return await this._service.handleGetEventById(id);
+  async getEraById(@Param("id") id: string) {
+    return await this._service.handleGetEraById(id);
   }
 
   @Post()
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async createEvent(@Body() data: CreateEventDto) {
-    return await this._service.handleCreateEvent(data);
+  async createEra(@Body() data: CreateEraDto) {
+    return await this._service.handleCreateEra(data);
   }
 
   @Put(":id")
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async updateEvent(@Param("id") id: string, @Body() data: UpdateEventDto) {
-    return await this._service.handleUpdateEvent(id, data);
+  async updateEra(@Param("id") id: string, @Body() data: UpdateEraDto) {
+    return await this._service.handleUpdateEra(id, data);
   }
 
   @Delete(":id")
   @ApiBearerAuth()
   @UseGuards(ProtectedGuard)
-  async deleteEvent(@Param("id") id: string) {
-    return await this._service.handleDeleteEvent(id);
+  async deleteEra(@Param("id") id: string) {
+    return await this._service.handleDeleteEra(id);
   }
 }
