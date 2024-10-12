@@ -6,18 +6,23 @@ import { IsOptional } from "class-validator";
 
 export class UpdatePlaceDto {
   @ApiProperty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
+  @IsOptional()
   location: string;
 
   @ApiProperty()
+  @IsOptional()
   thumbnail: string;
 
   @ApiProperty()
+  @IsOptional()
   status: DataStatus;
 
   @ApiProperty()

@@ -6,23 +6,29 @@ import { IsDateString, IsOptional } from "class-validator";
 
 export class UpdateEraDto {
   @ApiProperty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   startDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   endDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   thumbnail: string;
 
   @ApiProperty()
+  @IsOptional()
   status: DataStatus;
 
   @ApiProperty()

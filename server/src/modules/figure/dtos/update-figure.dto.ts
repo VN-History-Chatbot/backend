@@ -6,23 +6,29 @@ import { IsDateString, IsOptional } from "class-validator";
 
 export class UpdateFigureDto {
   @ApiProperty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
+  @IsOptional()
   biography: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   birthDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   @IsDateString()
   deathDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   thumbnail: string;
 
   @ApiProperty()
+  @IsOptional()
   status: DataStatus;
 
   @ApiProperty()

@@ -6,18 +6,23 @@ import { IsOptional } from "class-validator";
 
 export class UpdateArtifactDto {
   @ApiProperty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
+  @IsOptional()
   locationFound: string;
 
   @ApiProperty()
+  @IsOptional()
   thumbnail: string;
 
   @ApiProperty()
+  @IsOptional()
   status: DataStatus;
 
   @ApiProperty()
