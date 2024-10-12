@@ -1,7 +1,7 @@
 import { SortOrder } from "@/shared/enums/sort-order.enum";
 import { filterObjectToPrismaWhere } from "@/shared/helpers/prisma.helper";
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, TopicStatus } from "@prisma/client";
 import { DbService } from "../database/db.service";
 
 @Injectable()
@@ -57,6 +57,9 @@ export class TopicRepository {
   }
 
   async deleteTopicById(id: Prisma.TopicWhereUniqueInput) {
-    return this.dbCtx.topic.delete({ where: id });
+    return this.dbCtx.topic.update({
+      where: id,
+      data: { status: TopicStatus.DISABLED },
+    });
   }
 }

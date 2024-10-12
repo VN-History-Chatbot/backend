@@ -1,7 +1,7 @@
 import { SortOrder } from "@/shared/enums/sort-order.enum";
 import { filterObjectToPrismaWhere } from "@/shared/helpers/prisma.helper";
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { DataStatus, Prisma } from "@prisma/client";
 import { DbService } from "../database/db.service";
 
 @Injectable()
@@ -57,6 +57,9 @@ export class ArtifactRepository {
   }
 
   async deleteArtifactById(id: Prisma.ArtifactWhereUniqueInput) {
-    return this.dbCtx.artifact.delete({ where: id });
+    return this.dbCtx.artifact.update({
+      where: id,
+      data: { status: DataStatus.DELETED },
+    });
   }
 }
