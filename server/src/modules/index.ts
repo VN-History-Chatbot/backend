@@ -6,7 +6,7 @@ import { FigureModule } from "./figure/figure.module";
 import { PlaceModule } from "./place/place.module";
 import { ArtifactModule } from "./artifact/artifact.module";
 import { EraModule } from "./era/era.module";
-import { TopicModule } from "./topic/artifact.module";
+import { TopicModule } from "./topic/topic.module";
 
 export const modules = [
   PingModule,
