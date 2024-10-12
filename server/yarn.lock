@@ -375,6 +375,11 @@
   resolved "https://registry.npmjs.org/@google/generative-ai/-/generative-ai-0.19.0.tgz"
   integrity sha512-iGf/62v3sTwtEJGJY6S5m7PfkglU8hi1URaxqIjiRg1OItV27xyc4aVeR0og8cDkZFkUlGZKv+23bJtT1QWFzQ==
 
+"@google/generative-ai@^0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@google/generative-ai/-/generative-ai-0.21.0.tgz#a5011aab9e6082e706937b26ef23445933fa0d15"
+  integrity sha512-7XhUbtnlkSEZK15kN3t+tzIMxsbKm/dSkKBFalj+20NvPKe1kBY7mR2P7vuijEn+f06z5+A8bVGKO0v39cr6Wg==
+
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.14.tgz"
@@ -4588,7 +4593,7 @@ serve-static@1.15.0:
     passport-local "^1.0.0"
     reflect-metadata "^0.2.0"
     rxjs "^7.8.1"
-    server "file:../../../AppData/Local/Yarn/Cache/v6/npm-server-0.0.1-fb522804-ca14-491e-9ab5-897daf2208d4-1728552969084/node_modules/server"
+    server "file:C:/Users/lengo/AppData/Local/Yarn/Cache/v6/npm-server-0.0.1-0dd5b10e-6e25-4d2b-abbd-1c86405c75ff-1728704003543/node_modules/server"
 
 set-function-length@^1.2.1:
   version "1.2.2"

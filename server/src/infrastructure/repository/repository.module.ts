@@ -8,6 +8,7 @@ import { PlaceRepository } from "./place.repository";
 import { RoleRepository } from "./role.repository";
 import { TopicRepository } from "./topic.repository";
 import { UserRepository } from "./user.repository";
+import { ConversationRepository } from "./conversation.repository";
 
 @Global()
 @Module({
@@ -21,6 +22,7 @@ import { UserRepository } from "./user.repository";
     ArtifactRepository,
     EraRepository,
     TopicRepository,
+    ConversationRepository,
   ],
   exports: [
     UserRepository,
@@ -31,6 +33,7 @@ import { UserRepository } from "./user.repository";
     ArtifactRepository,
     EraRepository,
     TopicRepository,
+    ConversationRepository,
   ],
 })
 export class RepositoryModule {}

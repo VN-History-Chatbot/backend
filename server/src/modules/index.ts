@@ -7,6 +7,7 @@ import { PlaceModule } from "./place/place.module";
 import { ArtifactModule } from "./artifact/artifact.module";
 import { EraModule } from "./era/era.module";
 import { TopicModule } from "./topic/topic.module";
+import { ConversationModule } from "./conversation/conversation.module";
 
 export const modules = [
   PingModule,
@@ -18,4 +19,5 @@ export const modules = [
   TopicModule,
   UserModule,
   AuthModule,
+  ConversationModule,
 ];
