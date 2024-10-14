@@ -19,7 +19,7 @@ import { UpdateFigureDto } from "./dtos/update-figure.dto";
 import { FigureService } from "./figure.service";
 
 @ApiTags("Figures")
-@Controller("figures")
+@Controller("api/v1/figures")
 export class FigureController {
   constructor(private readonly _service: FigureService) {}
 

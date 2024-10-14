@@ -19,7 +19,7 @@ import { UpdateEventDto } from "./dtos/update-event.dto";
 import { EventService } from "./event.service";
 
 @ApiTags("Events")
-@Controller("events")
+@Controller("api/v1/events")
 export class EventController {
   constructor(private readonly _service: EventService) {}
 

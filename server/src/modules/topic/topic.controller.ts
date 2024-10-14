@@ -19,7 +19,7 @@ import { UpdateTopicDto } from "./dtos/update-topic.dto";
 import { TopicService } from "./topic.service";
 
 @ApiTags("Topics")
-@Controller("topics")
+@Controller("api/v1/topics")
 export class TopicController {
   constructor(private readonly _service: TopicService) {}
 

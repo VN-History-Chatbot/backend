@@ -19,7 +19,7 @@ import { UpdateEraDto } from "./dtos/update-era.dto";
 import { EraService } from "./era.service";
 
 @ApiTags("Eras")
-@Controller("eras")
+@Controller("api/v1/eras")
 export class EraController {
   constructor(private readonly _service: EraService) {}
 

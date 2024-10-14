@@ -19,7 +19,7 @@ import { UpdatePlaceDto } from "./dtos/update-place.dto";
 import { PlaceService } from "./place.service";
 
 @ApiTags("Places")
-@Controller("places")
+@Controller("api/v1/places")
 export class PlaceController {
   constructor(private readonly _service: PlaceService) {}
 

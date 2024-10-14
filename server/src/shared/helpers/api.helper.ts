@@ -91,6 +91,13 @@ const Error = (code: number, message: string) => {
   };
 };
 
+const Redirect = (url: string) => {
+  return {
+    code: 302,
+    url,
+  };
+};
+
 const ApiResp = {
   Ok,
   BadRequest,
@@ -101,6 +108,7 @@ const ApiResp = {
   ServiceUnavailable,
   InvalidParams,
   Error,
+  Redirect,
 };
 
 export default ApiResp;

@@ -14,6 +14,8 @@ import { Injectable } from "@nestjs/common";
 
 import { get } from "lodash";
 import { GetRefreshTokenDto } from "./dtos/refresh-token.dto";
+import { GgAuthReqDto } from "./dtos/gg-auth.dto";
+import { Response } from "express";
 
 @Injectable()
 export class AuthService {
@@ -41,12 +43,20 @@ export class AuthService {
     return ApiResp.Ok({ token });
   }
 
-  async handleGoogleAuth() {
+  async handleGoogleAuth(body: GgAuthReqDto) {
     this._logger.log("[GoogleAuth]");
 
     const localToken = await this._jwt.generateLocalToken();
 
     const url = `${GOOGLE_LOGIN_URL}?token=${localToken}`;
+
+    if (body.redirect) {
+      this._cache.set(
+        `local-token:redirect:${localToken}`,
+        body.redirect,
+        60 * 60 * 30,
+      );
+    }
 
     return ApiResp.Ok({
       localToken,
@@ -54,7 +64,7 @@ export class AuthService {
     });
   }
 
-  async handleGoogleLogin(req: any) {
+  async handleGoogleLogin(req: any, res: Response) {
     this._logger.log("[GoogleLogin]");
 
     const user = req.user;
@@ -66,6 +76,14 @@ export class AuthService {
     }
 
     await this._cache.set(`local-token:${localToken}`, user, 60 * 60 * 30);
+
+    const redirect = (await this._cache.get(
+      `local-token:redirect:${localToken}`,
+    )) as string;
+
+    if (redirect) {
+      return res.redirect(redirect);
+    }
 
     return ApiResp.Ok(undefined, "Login success you can close this tab now");
   }

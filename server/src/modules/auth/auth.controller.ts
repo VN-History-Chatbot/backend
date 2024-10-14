@@ -6,11 +6,13 @@ import {
   Post,
   Request,
   Body,
+  Res,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ApiTags } from "@nestjs/swagger";
 import { GoogleOAuthGuard } from "@/core/oauth/google.guard";
 import { GetRefreshTokenDto } from "./dtos/refresh-token.dto";
+import { GgAuthReqDto } from "./dtos/gg-auth.dto";
 
 @ApiTags("Auth")
 @Controller("api/v1/auth")
@@ -23,8 +25,8 @@ export class AuthController {
   }
 
   @Post("login-google")
-  async loginGoogle() {
-    return await this._service.handleGoogleAuth();
+  async loginGoogle(@Body() body: GgAuthReqDto) {
+    return await this._service.handleGoogleAuth(body);
   }
 
   @Get("verify-token")
@@ -38,8 +40,8 @@ export class AuthController {
 
   @Get("google/callback")
   @UseGuards(GoogleOAuthGuard)
-  async googleAuthRedirect(@Request() req) {
-    return await this._service.handleGoogleLogin(req);
+  async googleAuthRedirect(@Request() req, @Res() res) {
+    return await this._service.handleGoogleLogin(req, res);
   }
 
   @Post("refresh-token")

@@ -4,7 +4,7 @@ import { UserService } from "./user.service";
 import { ProtectedGuard } from "@/shared/middlewares/protected.guard";
 
 @ApiTags("Users")
-@Controller("users")
+@Controller("api/v1/users")
 export class UserController {
   constructor(private readonly _service: UserService) {}
 

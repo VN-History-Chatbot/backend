@@ -7,7 +7,7 @@ import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { ConversationCreate } from "./dtos/create.dto";
 
 @ApiTags("Conversations")
-@Controller("conversations")
+@Controller("api/v1/conversations")
 export class ConversationController {
   constructor(private readonly _service: ConversationService) {}
 
