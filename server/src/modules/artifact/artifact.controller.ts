@@ -19,7 +19,7 @@ import { UpdateArtifactDto } from "./dtos/update-artifact.dto";
 import { ArtifactService } from "./artifact.service";
 
 @ApiTags("Artifacts")
-@Controller("artifacts")
+@Controller("api/v1/artifacts")
 export class ArtifactController {
   constructor(private readonly _service: ArtifactService) {}
 
