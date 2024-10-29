@@ -35,7 +35,7 @@ export class PlaceRepository {
     ]);
 
     return {
-      places: places,
+      data: places,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };

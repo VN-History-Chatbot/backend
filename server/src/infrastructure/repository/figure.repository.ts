@@ -35,7 +35,7 @@ export class FigureRepository {
     ]);
 
     return {
-      figures: figures,
+      data: figures,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };

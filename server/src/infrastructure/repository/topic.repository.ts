@@ -35,7 +35,7 @@ export class TopicRepository {
     ]);
 
     return {
-      topics: topics,
+      data: topics,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };

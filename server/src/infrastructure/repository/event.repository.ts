@@ -35,7 +35,7 @@ export class EventRepository {
     ]);
 
     return {
-      events: events,
+      data: events,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };

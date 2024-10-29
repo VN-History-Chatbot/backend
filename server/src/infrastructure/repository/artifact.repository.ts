@@ -35,7 +35,7 @@ export class ArtifactRepository {
     ]);
 
     return {
-      artifacts: artifacts,
+      data: artifacts,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };

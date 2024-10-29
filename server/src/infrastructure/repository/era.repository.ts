@@ -35,7 +35,7 @@ export class EraRepository {
     ]);
 
     return {
-      eras: eras,
+      data: eras,
       currentPage: +page,
       totalPage: Math.ceil(total / pageSize),
     };
