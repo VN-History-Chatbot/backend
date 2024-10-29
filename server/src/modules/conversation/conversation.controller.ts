@@ -5,6 +5,7 @@ import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { ConversationService } from "./conversation.service";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { ConversationCreate } from "./dtos/create.dto";
+import { GenerateQuizReq } from "./dtos/gen-quiz.dto";
 
 @ApiTags("Conversations")
 @Controller("api/v1/conversations")
@@ -44,5 +45,12 @@ export class ConversationController {
   @UseGuards(ProtectedGuard)
   async getMessages(@Param("conversationId") conversationId: string) {
     return await this._service.handleGetConversationMessages(conversationId);
+  }
+
+  @Post("generate-quiz")
+  @ApiBearerAuth()
+  @UseGuards(ProtectedGuard)
+  async generateQuiz(@Body() data: GenerateQuizReq) {
+    return await this._service.handleGenerateQuiz(data);
   }
 }

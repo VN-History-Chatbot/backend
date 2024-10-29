@@ -10,6 +10,12 @@ import { ConversationCreate } from "./dtos/create.dto";
 import ApiResp from "@/shared/helpers/api.helper";
 import { ChatReqDto } from "./dtos/chat.dto";
 import { BOT_USER_ID } from "@/shared/constants/user.const";
+import { GenerateQuizReq } from "./dtos/gen-quiz.dto";
+import { ArtifactRepository } from "@/infrastructure/repository/artifact.repository";
+import { FigureRepository } from "@/infrastructure/repository/figure.repository";
+import { PlaceRepository } from "@/infrastructure/repository/place.repository";
+import { TopicRepository } from "@/infrastructure/repository/topic.repository";
+import { EventRepository } from "@/infrastructure/repository/event.repository";
 
 @Injectable()
 export class ConversationService {
@@ -18,6 +24,11 @@ export class ConversationService {
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _repo: ConversationRepository,
+    private readonly _topicRepo: TopicRepository,
+    private readonly _artifactRepo: ArtifactRepository,
+    private readonly _figureRepo: FigureRepository,
+    private readonly _placeRepo: PlaceRepository,
+    private readonly _eventRepo: EventRepository,
     private readonly _geminiService: GeminiService,
   ) {
     this._logger.setContext("ConversationServices");
@@ -141,6 +152,95 @@ export class ConversationService {
 
     return ApiResp.Ok({
       messages,
+    });
+  }
+
+  async handleGenerateQuiz(data: GenerateQuizReq) {
+    this._logger.log("[GenerateQuiz]");
+
+    const LIMIT = 20;
+
+    let basedContent = ``;
+
+    if (data.topic) {
+      const topic = await this._topicRepo.findTopicById({ id: data.topic });
+      if (!topic) {
+        return ApiResp.NotFound("Topic not found");
+      }
+
+      basedContent += `Chủ đề về ${topic.name}. ${topic.description}. `;
+    }
+
+    if (data.artifact) {
+      const artifact = await this._artifactRepo.findArtifactById({
+        id: data.artifact,
+      });
+      if (!artifact) {
+        return ApiResp.NotFound("Artifact not found");
+      }
+
+      basedContent += `Vật phẩm ${artifact.name}. ${artifact.description}. `;
+    }
+
+    if (data.figure) {
+      const figure = await this._figureRepo.findFigureById({ id: data.figure });
+      if (!figure) {
+        return ApiResp.NotFound("Figure not found");
+      }
+
+      basedContent += `Nhân vật ${figure.name}. ${figure.biography}. `;
+    }
+
+    if (data.place) {
+      const place = await this._placeRepo.findPlaceById({
+        id: data.place,
+      });
+      if (!place) {
+        return ApiResp.NotFound("Place not found");
+      }
+
+      basedContent += `Địa điểm ${place.name}. ${place.description}. `;
+    }
+
+    if (data.event) {
+      const event = await this._eventRepo.findEventById({
+        id: data.event,
+      });
+      if (!event) {
+        return ApiResp.NotFound("Event not found");
+      }
+
+      basedContent += `Sự kiện ${event.name}. ${event.content.slice(500)}. `;
+    }
+
+    const prompt = `Tạo cho tôi ${data.limit ? data.limit : LIMIT} câu hỏi về lịch sử Việt Nam. ${basedContent ? `Dựa trên các thông tin sau: ${basedContent}` : ""}
+      Using this JSON schema:
+      Quiz = {'question': string, 'options': [string], 'answers': [string]}
+      Return: Array<Quiz>
+    `;
+
+    this._logger.log(`[GenerateQuiz] prompt: ${prompt}`);
+
+    const promptResp = await this._geminiService.generateText(prompt);
+
+    this._logger.log(
+      `[Chat] Generated response: ${JSON.stringify(promptResp.response.candidates)}`,
+    );
+
+    const message = promptResp.response.text();
+
+    // get message between ``` and ```
+    let jsonData = message.split("```")[1];
+    // remove json prefix
+    if (jsonData.startsWith("json\n")) {
+      jsonData = jsonData.substring(5);
+    }
+
+    // parse json data
+    const resp = JSON.parse(jsonData);
+
+    return ApiResp.Ok({
+      data: resp,
     });
   }
 }
