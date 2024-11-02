@@ -8,6 +8,7 @@ import { ArtifactModule } from "./artifact/artifact.module";
 import { EraModule } from "./era/era.module";
 import { TopicModule } from "./topic/topic.module";
 import { ConversationModule } from "./conversation/conversation.module";
+import { GenAIModule } from "./genai/genai.module";
 
 export const modules = [
   PingModule,
@@ -20,4 +21,5 @@ export const modules = [
   UserModule,
   AuthModule,
   ConversationModule,
+  GenAIModule,
 ];
