@@ -1,6 +1,15 @@
 import { ChatReqDto } from "./dtos/chat.dto";
 import { ProtectedGuard } from "@/shared/middlewares/protected.guard";
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from "@nestjs/common";
 
 import { ConversationService } from "./conversation.service";
 import { ApiTags, ApiBearerAuth } from "@nestjs/swagger";
@@ -52,5 +61,22 @@ export class ConversationController {
   @UseGuards(ProtectedGuard)
   async generateQuiz(@Body() data: GenerateQuizReq) {
     return await this._service.handleGenerateQuiz(data);
+  }
+
+  @Put(":id")
+  @ApiBearerAuth()
+  @UseGuards(ProtectedGuard)
+  async updateConversation(
+    @Param("id") id: string,
+    @Body() data: ConversationCreate,
+  ) {
+    return await this._service.handleUpdateConversation(id, data);
+  }
+
+  @Delete(":id")
+  @ApiBearerAuth()
+  @UseGuards(ProtectedGuard)
+  async deleteConversation(@Param("id") id: string) {
+    return await this._service.handleDeleteConversation(id);
   }
 }

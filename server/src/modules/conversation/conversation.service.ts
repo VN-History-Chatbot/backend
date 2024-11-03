@@ -272,4 +272,58 @@ export class ConversationService {
       data: resp,
     });
   }
+
+  async handleUpdateConversation(id: string, data: ConversationCreate) {
+    this._logger.log("[UpdateConversation]");
+
+    const payload = get(this.httpReq, "user") as Payload;
+
+    if (!payload) {
+      this._logger.error("[UpdateConversation] Payload is empty");
+
+      return ApiResp.Unauthorized();
+    }
+
+    const conversation = await this._repo.findConversationById({
+      id,
+    });
+
+    if (!conversation) {
+      return ApiResp.NotFound("Conversation not found");
+    }
+
+    const updatedConversation = await this._repo.updateConversation(
+      { id },
+      {
+        name: data.name,
+        thumbnail: data.thumbnail,
+        metadata: data.metadata,
+        updatedUser: {
+          connect: {
+            id: payload.sub,
+          },
+        },
+      },
+    );
+
+    return ApiResp.Ok({
+      conversation: updatedConversation,
+    });
+  }
+
+  async handleDeleteConversation(id: string) {
+    this._logger.log("[DeleteConversation]");
+
+    const conversation = await this._repo.findConversationById({
+      id,
+    });
+
+    if (!conversation) {
+      return ApiResp.NotFound("Conversation not found");
+    }
+
+    await this._repo.deleteConversation({ id });
+
+    return ApiResp.Ok();
+  }
 }

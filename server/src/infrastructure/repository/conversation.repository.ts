@@ -59,4 +59,15 @@ export class ConversationRepository {
       },
     });
   }
+
+  async deleteConversation(id: Prisma.ConversationWhereUniqueInput) {
+    // delete all messages in the conversation
+    await this.dbCtx.message.deleteMany({
+      where: {
+        conversationId: id.id,
+      },
+    });
+
+    return this.dbCtx.conversation.delete({ where: id });
+  }
 }
