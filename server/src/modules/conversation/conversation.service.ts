@@ -16,6 +16,7 @@ import { FigureRepository } from "@/infrastructure/repository/figure.repository"
 import { PlaceRepository } from "@/infrastructure/repository/place.repository";
 import { TopicRepository } from "@/infrastructure/repository/topic.repository";
 import { EventRepository } from "@/infrastructure/repository/event.repository";
+import { HistoryRepository } from "@/infrastructure/repository/history.repository";
 
 @Injectable()
 export class ConversationService {
@@ -30,6 +31,7 @@ export class ConversationService {
     private readonly _placeRepo: PlaceRepository,
     private readonly _eventRepo: EventRepository,
     private readonly _geminiService: GeminiService,
+    private readonly _historyRepo: HistoryRepository,
   ) {
     this._logger.setContext("ConversationServices");
   }
@@ -121,6 +123,33 @@ export class ConversationService {
 
     const message = promptResp.response.text();
 
+    // search
+    const embeddedPromptResp = await this._geminiService.embedText(
+      data.message,
+    );
+
+    const vectorResult = await this._historyRepo.vectorSearchData(
+      embeddedPromptResp.values,
+      5,
+    );
+
+    const metadata = {
+      isBot: true,
+    };
+
+    if (vectorResult.length > 0) {
+      for (const item of vectorResult) {
+        const [type, id] = item.target.split("-");
+        if (metadata[type]) {
+          metadata[type].push(id);
+        } else {
+          metadata[type] = [id];
+        }
+      }
+    }
+
+    // combine metadata
+
     const result = await this._repo.createManyMessages([
       {
         content: data.message,
@@ -132,7 +161,7 @@ export class ConversationService {
       {
         content: message,
         conversationId: data.conversationId,
-        metadata: `{ "isBot": "true" }`,
+        metadata: JSON.stringify(metadata),
         createdBy: BOT_USER_ID,
         updatedBy: BOT_USER_ID,
       },

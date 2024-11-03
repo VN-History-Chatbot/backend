@@ -18,3 +18,13 @@ export const encodeBase64 = (data: string) => {
 export const decodeBase64 = (data: string) => {
   return Buffer.from(data, "base64").toString("utf-8");
 };
+
+export const isValidJson = (jsonString: string): boolean => {
+  try {
+    JSON.parse(jsonString);
+    return true;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (e: any) {
+    return false;
+  }
+};
