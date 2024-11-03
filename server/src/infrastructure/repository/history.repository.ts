@@ -23,7 +23,7 @@ export class HistoryRepository {
     const result = await this.historyModel.aggregate([
       {
         $vectorSearch: {
-          index: "vector_index",
+          index: "vectorsearch",
           queryVector: vector,
           path: "embedding",
           limit,
@@ -32,10 +32,9 @@ export class HistoryRepository {
       },
       {
         $project: {
-          name: 1,
-          description: 1,
+          content: 1,
           target: 1,
-          score: 1,
+          score: { $meta: "vectorSearchScore" },
         },
       },
     ]);

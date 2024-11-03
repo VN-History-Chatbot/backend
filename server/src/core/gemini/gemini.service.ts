@@ -23,7 +23,7 @@ export class GeminiService {
   }
 
   async embedText(text: string) {
-    const response = await this._embedModel.embedContent(text);
+    const response = await this._embedModel.embedContent(text.slice(0, 999));
 
     return response.embedding;
   }
