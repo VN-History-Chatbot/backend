@@ -29,6 +29,7 @@ export class FigureRepository {
       },
       include: {
         eras: true,
+        events: true,
       },
     } satisfies Prisma.FigureFindManyArgs;
 
@@ -49,6 +50,7 @@ export class FigureRepository {
       where: id,
       include: {
         eras: true,
+        events: true,
       },
     });
   }

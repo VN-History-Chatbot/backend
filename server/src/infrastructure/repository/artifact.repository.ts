@@ -29,6 +29,7 @@ export class ArtifactRepository {
       },
       include: {
         eras: true,
+        events: true,
       },
     } satisfies Prisma.ArtifactFindManyArgs;
 
@@ -49,6 +50,7 @@ export class ArtifactRepository {
       where: id,
       include: {
         eras: true,
+        events: true,
       },
     });
   }

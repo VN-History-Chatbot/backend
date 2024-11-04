@@ -38,6 +38,10 @@ export class UpdateFigureDto {
   @ApiProperty()
   @IsOptional()
   eraIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  eventIds: string[];
 }
 
 export function toUpdateModel(
@@ -68,6 +72,14 @@ export function toUpdateModel(
       dto.eraIds && dto.eraIds.length > 0
         ? {
             set: dto.eraIds.map((id) => ({ id })),
+          }
+        : {
+            set: [],
+          },
+    events:
+      dto.eventIds && dto.eventIds.length > 0
+        ? {
+            set: dto.eventIds.map((id) => ({ id })),
           }
         : {
             set: [],

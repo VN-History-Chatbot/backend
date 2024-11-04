@@ -28,6 +28,10 @@ export class UpdateTopicDto {
   @ApiProperty()
   @IsOptional()
   eraIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  eventIds: string[];
 }
 
 export function toUpdateModel(
@@ -58,5 +62,13 @@ export function toUpdateModel(
             connect: dto.eraIds.map((id) => ({ id })),
           }
         : undefined,
+    events:
+      dto.eventIds && dto.eventIds.length > 0
+        ? {
+            set: dto.eventIds.map((id) => ({ id })),
+          }
+        : {
+            set: [],
+          },
   } as Prisma.TopicUpdateInput;
 }

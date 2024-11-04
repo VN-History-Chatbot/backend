@@ -42,6 +42,18 @@ export class UpdateEventDto {
   @ApiProperty()
   @IsOptional()
   eraId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  figureIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  artifactIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  placeIds: string[];
 }
 
 export function toUpdateModel(
@@ -76,5 +88,29 @@ export function toUpdateModel(
       : {
           set: [],
         },
+    figures:
+      dto.figureIds && dto.figureIds.length > 0
+        ? {
+            set: dto.figureIds.map((id) => ({ id })),
+          }
+        : {
+            set: [],
+          },
+    artifacts:
+      dto.artifactIds && dto.artifactIds.length > 0
+        ? {
+            set: dto.artifactIds.map((id) => ({ id })),
+          }
+        : {
+            set: [],
+          },
+    places:
+      dto.placeIds && dto.placeIds.length > 0
+        ? {
+            set: dto.placeIds.map((id) => ({ id })),
+          }
+        : {
+            set: [],
+          },
   } as Prisma.EventUpdateInput;
 }

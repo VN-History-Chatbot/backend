@@ -29,6 +29,7 @@ export class TopicRepository {
       },
       include: {
         eras: true,
+        events: true,
       },
     } satisfies Prisma.TopicFindManyArgs;
 
@@ -49,6 +50,7 @@ export class TopicRepository {
       where: id,
       include: {
         eras: true,
+        events: true,
       },
     });
   }

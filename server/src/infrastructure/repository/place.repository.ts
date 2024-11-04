@@ -29,6 +29,7 @@ export class PlaceRepository {
       },
       include: {
         eras: true,
+        events: true,
       },
     } satisfies Prisma.PlaceFindManyArgs;
 
@@ -49,6 +50,7 @@ export class PlaceRepository {
       where: id,
       include: {
         eras: true,
+        events: true,
       },
     });
   }

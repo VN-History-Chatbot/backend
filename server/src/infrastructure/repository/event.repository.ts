@@ -29,6 +29,9 @@ export class EventRepository {
       },
       include: {
         eras: true,
+        figures: true,
+        artifacts: true,
+        places: true,
       },
     } satisfies Prisma.EventFindManyArgs;
 
@@ -49,6 +52,9 @@ export class EventRepository {
       where: id,
       include: {
         eras: true,
+        figures: true,
+        artifacts: true,
+        places: true,
       },
     });
   }

@@ -36,6 +36,15 @@ export class FilterEventDto {
 
   @ApiProperty({ required: false })
   eraId: string;
+
+  @ApiProperty({ required: false })
+  figureId: string;
+
+  @ApiProperty({ required: false })
+  artifactId: string;
+
+  @ApiProperty({ required: false })
+  placeId: string;
 }
 
 export function toFilterModel(dto: FilterEventDto): Prisma.EventUpdateInput {
@@ -56,6 +65,21 @@ export function toFilterModel(dto: FilterEventDto): Prisma.EventUpdateInput {
     eras: dto?.eraId
       ? {
           some: { id: dto.eraId },
+        }
+      : undefined,
+    figures: dto?.figureId
+      ? {
+          some: { id: dto.figureId },
+        }
+      : undefined,
+    artifacts: dto?.artifactId
+      ? {
+          some: { id: dto.artifactId },
+        }
+      : undefined,
+    places: dto?.placeId
+      ? {
+          some: { id: dto.placeId },
         }
       : undefined,
   };

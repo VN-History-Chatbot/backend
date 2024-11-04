@@ -25,6 +25,9 @@ export class FilterArtifactDto {
 
   @ApiProperty({ required: false })
   eraId: string;
+
+  @ApiProperty({ required: false })
+  eventId: string;
 }
 
 export function toFilterModel(
@@ -45,6 +48,11 @@ export function toFilterModel(
     eras: dto?.eraId
       ? {
           some: { id: dto.eraId },
+        }
+      : undefined,
+    events: dto?.eventId
+      ? {
+          some: { id: dto.eventId },
         }
       : undefined,
   };

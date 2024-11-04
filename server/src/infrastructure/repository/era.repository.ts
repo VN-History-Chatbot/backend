@@ -27,6 +27,13 @@ export class EraRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
+      include: {
+        topics: true,
+        artifacts: true,
+        events: true,
+        figures: true,
+        places: true,
+      },
     } satisfies Prisma.EraFindManyArgs;
 
     const [eras, total] = await this.dbCtx.$transaction([
@@ -42,7 +49,16 @@ export class EraRepository {
   }
 
   async findEraById(id: Prisma.EraWhereUniqueInput) {
-    return this.dbCtx.era.findFirst({ where: id });
+    return this.dbCtx.era.findFirst({
+      where: id,
+      include: {
+        topics: true,
+        artifacts: true,
+        events: true,
+        figures: true,
+        places: true,
+      },
+    });
   }
 
   async createEra(data: Prisma.EraCreateInput) {

@@ -33,6 +33,9 @@ export class FilterFigureDto {
 
   @ApiProperty({ required: false })
   eraId: string;
+
+  @ApiProperty({ required: false })
+  eventId: string;
 }
 
 export function toFilterModel(dto: FilterFigureDto): Prisma.FigureUpdateInput {
@@ -52,6 +55,11 @@ export function toFilterModel(dto: FilterFigureDto): Prisma.FigureUpdateInput {
     eras: dto?.eraId
       ? {
           some: { id: dto.eraId },
+        }
+      : undefined,
+    events: dto?.eventId
+      ? {
+          some: { id: dto.eventId },
         }
       : undefined,
   };

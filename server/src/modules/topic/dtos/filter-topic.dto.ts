@@ -22,6 +22,9 @@ export class FilterTopicDto {
 
   @ApiProperty({ required: false })
   eraId: string;
+
+  @ApiProperty({ required: false })
+  eventId: string;
 }
 
 export function toFilterModel(dto: FilterTopicDto): Prisma.TopicUpdateInput {
@@ -39,6 +42,11 @@ export function toFilterModel(dto: FilterTopicDto): Prisma.TopicUpdateInput {
     eras: dto?.eraId
       ? {
           some: { id: dto.eraId },
+        }
+      : undefined,
+    events: dto?.eventId
+      ? {
+          some: { id: dto.eventId },
         }
       : undefined,
   };
