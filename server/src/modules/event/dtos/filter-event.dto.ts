@@ -33,6 +33,9 @@ export class FilterEventDto {
 
   @ApiProperty({ required: false })
   status: DataStatus;
+
+  @ApiProperty({ required: false })
+  eraId: string;
 }
 
 export function toFilterModel(dto: FilterEventDto): Prisma.EventUpdateInput {
@@ -50,6 +53,11 @@ export function toFilterModel(dto: FilterEventDto): Prisma.EventUpdateInput {
     startDate: dto?.startDate ? new Date(dto?.startDate) : undefined,
     endDate: dto?.endDate ? new Date(dto?.endDate) : undefined,
     status: dto?.status,
+    eras: dto?.eraId
+      ? {
+          some: { id: dto.eraId },
+        }
+      : undefined,
   };
 
   return removeUndefinedFields(model) as Prisma.EventUpdateInput;

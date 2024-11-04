@@ -27,6 +27,9 @@ export class TopicRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
+      include: {
+        eras: true,
+      },
     } satisfies Prisma.TopicFindManyArgs;
 
     const [topics, total] = await this.dbCtx.$transaction([
@@ -42,7 +45,12 @@ export class TopicRepository {
   }
 
   async findTopicById(id: Prisma.TopicWhereUniqueInput) {
-    return this.dbCtx.topic.findFirst({ where: id });
+    return this.dbCtx.topic.findFirst({
+      where: id,
+      include: {
+        eras: true,
+      },
+    });
   }
 
   async createTopic(data: Prisma.TopicCreateInput) {

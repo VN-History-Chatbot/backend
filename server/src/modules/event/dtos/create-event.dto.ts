@@ -29,6 +29,10 @@ export class CreateEventDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraId: string;
 }
 
 export function toModel(
@@ -56,5 +60,10 @@ export function toModel(
     },
     createdAt: new Date(),
     updatedAt: new Date(),
+    eras: dto.eraId
+      ? {
+          connect: { id: dto.eraId },
+        }
+      : undefined,
   } as Prisma.EventCreateInput;
 }

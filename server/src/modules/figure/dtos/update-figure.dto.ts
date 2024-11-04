@@ -34,6 +34,10 @@ export class UpdateFigureDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraIds: string[];
 }
 
 export function toUpdateModel(
@@ -60,5 +64,13 @@ export function toUpdateModel(
       },
     },
     updatedAt: new Date(),
+    eras:
+      dto.eraIds && dto.eraIds.length > 0
+        ? {
+            set: dto.eraIds.map((id) => ({ id })),
+          }
+        : {
+            set: [],
+          },
   } as Prisma.FigureUpdateInput;
 }

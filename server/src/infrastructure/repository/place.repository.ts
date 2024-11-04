@@ -27,6 +27,9 @@ export class PlaceRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
+      include: {
+        eras: true,
+      },
     } satisfies Prisma.PlaceFindManyArgs;
 
     const [places, total] = await this.dbCtx.$transaction([
@@ -42,7 +45,12 @@ export class PlaceRepository {
   }
 
   async findPlaceById(id: Prisma.PlaceWhereUniqueInput) {
-    return this.dbCtx.place.findFirst({ where: id });
+    return this.dbCtx.place.findFirst({
+      where: id,
+      include: {
+        eras: true,
+      },
+    });
   }
 
   async createPlace(data: Prisma.PlaceCreateInput) {

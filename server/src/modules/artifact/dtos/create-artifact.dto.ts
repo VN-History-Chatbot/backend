@@ -21,6 +21,10 @@ export class CreateArtifactDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraIds: string[];
 }
 
 export function toModel(
@@ -46,5 +50,11 @@ export function toModel(
     },
     createdAt: new Date(),
     updatedAt: new Date(),
+    eras:
+      dto.eraIds && dto.eraIds.length > 0
+        ? {
+            connect: dto.eraIds.map((id) => ({ id })),
+          }
+        : undefined,
   } as Prisma.ArtifactCreateInput;
 }

@@ -24,6 +24,10 @@ export class UpdateTopicDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraIds: string[];
 }
 
 export function toUpdateModel(
@@ -48,5 +52,11 @@ export function toUpdateModel(
       },
     },
     updatedAt: new Date(),
+    eras:
+      dto.eraIds && dto.eraIds.length > 0
+        ? {
+            connect: dto.eraIds.map((id) => ({ id })),
+          }
+        : undefined,
   } as Prisma.TopicUpdateInput;
 }

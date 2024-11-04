@@ -22,6 +22,9 @@ export class FilterPlaceDto {
 
   @ApiProperty({ required: false })
   status: DataStatus;
+
+  @ApiProperty({ required: false })
+  eraId: string;
 }
 
 export function toFilterModel(dto: FilterPlaceDto): Prisma.PlaceUpdateInput {
@@ -37,6 +40,11 @@ export function toFilterModel(dto: FilterPlaceDto): Prisma.PlaceUpdateInput {
     location: dto?.location,
     thumbnail: dto?.thumbnail,
     status: dto?.status,
+    eras: dto?.eraId
+      ? {
+          some: { id: dto.eraId },
+        }
+      : undefined,
   };
 
   return removeUndefinedFields(model) as Prisma.PlaceUpdateInput;

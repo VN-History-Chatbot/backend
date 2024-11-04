@@ -19,6 +19,9 @@ export class FilterTopicDto {
 
   @ApiProperty({ required: false })
   status: DataStatus;
+
+  @ApiProperty({ required: false })
+  eraId: string;
 }
 
 export function toFilterModel(dto: FilterTopicDto): Prisma.TopicUpdateInput {
@@ -33,6 +36,11 @@ export function toFilterModel(dto: FilterTopicDto): Prisma.TopicUpdateInput {
     description: dto?.description,
     thumbnail: dto?.thumbnail,
     status: dto?.status,
+    eras: dto?.eraId
+      ? {
+          some: { id: dto.eraId },
+        }
+      : undefined,
   };
 
   return removeUndefinedFields(model) as Prisma.TopicUpdateInput;

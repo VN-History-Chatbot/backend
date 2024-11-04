@@ -38,6 +38,10 @@ export class UpdateEventDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraId: string;
 }
 
 export function toUpdateModel(
@@ -65,5 +69,12 @@ export function toUpdateModel(
       },
     },
     updatedAt: new Date(),
+    eras: dto.eraId
+      ? {
+          set: [{ id: dto.eraId }],
+        }
+      : {
+          set: [],
+        },
   } as Prisma.EventUpdateInput;
 }
