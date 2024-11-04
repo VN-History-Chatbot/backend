@@ -27,6 +27,12 @@ export class EventRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
+      include: {
+        eras: true,
+        figures: true,
+        artifacts: true,
+        places: true,
+      },
     } satisfies Prisma.EventFindManyArgs;
 
     const [events, total] = await this.dbCtx.$transaction([
@@ -42,7 +48,15 @@ export class EventRepository {
   }
 
   async findEventById(id: Prisma.EventWhereUniqueInput) {
-    return this.dbCtx.event.findFirst({ where: id });
+    return this.dbCtx.event.findFirst({
+      where: id,
+      include: {
+        eras: true,
+        figures: true,
+        artifacts: true,
+        places: true,
+      },
+    });
   }
 
   async createEvent(data: Prisma.EventCreateInput) {

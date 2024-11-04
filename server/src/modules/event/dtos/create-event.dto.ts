@@ -29,6 +29,22 @@ export class CreateEventDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  figureIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  artifactIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  placeIds: string[];
 }
 
 export function toModel(
@@ -56,5 +72,28 @@ export function toModel(
     },
     createdAt: new Date(),
     updatedAt: new Date(),
+    eras: dto.eraId
+      ? {
+          connect: { id: dto.eraId },
+        }
+      : undefined,
+    figures:
+      dto.figureIds && dto.figureIds.length > 0
+        ? {
+            connect: dto.figureIds.map((id) => ({ id })),
+          }
+        : undefined,
+    artifacts:
+      dto.artifactIds && dto.artifactIds.length > 0
+        ? {
+            set: dto.artifactIds.map((id) => ({ id })),
+          }
+        : undefined,
+    places:
+      dto.placeIds && dto.placeIds.length > 0
+        ? {
+            set: dto.placeIds.map((id) => ({ id })),
+          }
+        : undefined,
   } as Prisma.EventCreateInput;
 }

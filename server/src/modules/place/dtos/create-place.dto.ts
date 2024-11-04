@@ -21,6 +21,14 @@ export class CreatePlaceDto {
   @ApiProperty()
   @IsOptional()
   metadata: string;
+
+  @ApiProperty()
+  @IsOptional()
+  eraIds: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  eventIds: string[];
 }
 
 export function toModel(
@@ -46,5 +54,17 @@ export function toModel(
     },
     createdAt: new Date(),
     updatedAt: new Date(),
+    eras:
+      dto.eraIds && dto.eraIds.length > 0
+        ? {
+            connect: dto.eraIds.map((id) => ({ id })),
+          }
+        : undefined,
+    events:
+      dto.eventIds && dto.eventIds.length > 0
+        ? {
+            connect: dto.eventIds.map((id) => ({ id })),
+          }
+        : undefined,
   } as Prisma.PlaceCreateInput;
 }
