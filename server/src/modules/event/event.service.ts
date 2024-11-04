@@ -10,6 +10,7 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
 import { CreateEventDto, toModel } from "./dtos/create-event.dto";
 import { toUpdateModel, UpdateEventDto } from "./dtos/update-event.dto";
+import { HistoryRepository } from "@/infrastructure/repository/history.repository";
 
 @Injectable()
 export class EventService {
@@ -18,6 +19,7 @@ export class EventService {
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _eventRepo: EventRepository,
+    private readonly _historyRepo: HistoryRepository,
   ) {
     this._logger.setContext("EventServices");
   }
@@ -88,6 +90,22 @@ export class EventService {
     const model = toUpdateModel(data, payload.sub);
 
     const event = await this._eventRepo.updateEventById({ id }, model);
+
+    if (event.status === DataStatus.PUBLISHED) {
+      this._logger.log("[UpdateEvent] Sync data to history mongodb");
+      try {
+        await this._historyRepo.syncData({
+          id: event.id,
+          type: "event",
+          content: `${event.name} - ${event.brief}`,
+        });
+      } catch (error) {
+        this._logger.error(
+          "[UpdateEvent] Error when sync data to history",
+          error,
+        );
+      }
+    }
 
     return ApiResp.Ok({
       event,

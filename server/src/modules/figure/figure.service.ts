@@ -10,6 +10,7 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
 import { CreateFigureDto, toModel } from "./dtos/create-figure.dto";
 import { toUpdateModel, UpdateFigureDto } from "./dtos/update-figure.dto";
+import { HistoryRepository } from "@/infrastructure/repository/history.repository";
 
 @Injectable()
 export class FigureService {
@@ -18,6 +19,7 @@ export class FigureService {
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _figureRepo: FigureRepository,
+    private readonly _historyRepo: HistoryRepository,
   ) {
     this._logger.setContext("FigureServices");
   }
@@ -88,6 +90,22 @@ export class FigureService {
     const model = toUpdateModel(data, payload.sub);
 
     const figure = await this._figureRepo.updateFigureById({ id }, model);
+
+    if (figure.status === DataStatus.PUBLISHED) {
+      this._logger.log("[UpdateFigure] Sync data to history mongodb");
+      try {
+        await this._historyRepo.syncData({
+          id: figure.id,
+          type: "figure",
+          content: `${figure.name} - ${figure.biography.slice(0, 300)}`,
+        });
+      } catch (error) {
+        this._logger.error(
+          "[UpdateFigure] Error when sync data to history",
+          error,
+        );
+      }
+    }
 
     return ApiResp.Ok({
       figure,

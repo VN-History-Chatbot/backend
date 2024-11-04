@@ -123,33 +123,34 @@ export class ConversationService {
 
     const message = promptResp.response.text();
 
-    // search
-    const embeddedPromptResp = await this._geminiService.hfEmbedding(
-      data.message,
-    );
-
-    const vectorResult = await this._historyRepo.vectorSearchData(
-      embeddedPromptResp as number[],
-      data.searchLimit || 5,
-    );
-
     const metadata = {
       isBot: true,
     };
 
-    if (vectorResult.length > 0) {
-      for (const item of vectorResult) {
-        const [type, id] = item.target.split("-");
-        if (metadata[type]) {
-          metadata[type].push(id);
-        } else {
-          metadata[type] = [id];
+    if (data.searchVector) {
+      // search
+      const embeddedPromptResp = await this._geminiService.hfEmbedding(
+        data.message,
+      );
+
+      const vectorResult = await this._historyRepo.vectorSearchData(
+        embeddedPromptResp as number[],
+        data.searchLimit || 5,
+      );
+
+      if (vectorResult.length > 0) {
+        for (const item of vectorResult) {
+          const [type, id] = item.target.split("-");
+          if (metadata[type]) {
+            metadata[type].push(id);
+          } else {
+            metadata[type] = [id];
+          }
         }
       }
     }
 
     // combine metadata
-
     const result = await this._repo.createManyMessages([
       {
         content: data.message,

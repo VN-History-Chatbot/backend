@@ -3,12 +3,14 @@ import { DbService } from "../database/db.service";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { History } from "../schemas/history.schema";
+import { GeminiService } from "@/core/gemini/gemini.service";
 
 @Injectable()
 export class HistoryRepository {
   constructor(
     private dbCtx: DbService,
     @InjectModel(History.name) private readonly historyModel: Model<History>,
+    private readonly _geminiService: GeminiService,
   ) {}
 
   getCollection() {}
@@ -60,23 +62,31 @@ export class HistoryRepository {
     id: string;
     type: string;
     content: string;
-    embed: number[];
+    // embed: number[];
   }) {
+    const embed = await this._geminiService.hfEmbedding(data.content);
+
     const historyData = {
       content: data.content,
       target: `${data.type}-${data.id}`,
-      embedding: data.embed,
+      embedding: embed,
     } as History;
 
     const exist = await this.getByTarget(`${data.type}-${data.id}`);
 
     if (exist) {
-      const result = await this.updateData(exist.id, historyData);
+      await this.updateData(exist.id, historyData);
 
-      return result;
+      return 1;
     }
 
     const result = await this.addData([historyData]);
+
+    return result.length;
+  }
+
+  async deleteByTarget(target: string) {
+    const result = await this.historyModel.deleteOne({ target });
 
     return result;
   }

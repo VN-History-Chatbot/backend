@@ -6,6 +6,7 @@ import {
   IsNumber,
   Max,
   Min,
+  IsBoolean,
 } from "class-validator";
 export class ChatReqDto {
   @ApiProperty()
@@ -28,4 +29,9 @@ export class ChatReqDto {
   @Max(20)
   @Min(0)
   searchLimit?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  searchVector?: boolean;
 }
