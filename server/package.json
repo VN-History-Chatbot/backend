@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@huggingface/inference": "^2.8.1",
+    "@huggingface/transformers": "^3.0.2",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",

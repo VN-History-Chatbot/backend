@@ -34,32 +34,32 @@ export class GenAIService {
 
   async handleAddEvents(query: InsertDataReq) {
     if (query.type === "event") {
-      // const events = await this._eventRepo.findEvents(1, 100, null);
+      const events = await this._eventRepo.findEvents(3, 10, null);
 
       const historyEvents: History[] = [
-        {
-          content: "test",
-          target: "test",
-          embedding: [],
-        } as History,
+        // {
+        //   content: "test",
+        //   target: "test",
+        //   embedding: [],
+        // } as History,
       ];
 
-      // for (let i = 0; i < events.data.length; i++) {
-      //   const e = events.data[i];
-      //   const content = `${e.name} + ${e.brief}`;
-      //   const embeded = await this._geminiService.embedText(content);
+      for (let i = 0; i < events.data.length; i++) {
+        const e = events.data[i];
+        const content = `${e.name} - ${e.brief}`;
+        const embeded = await this._geminiService.hfEmbedding(content);
 
-      //   historyEvents.push({
-      //     content: content,
-      //     embedding: embeded.values,
-      //     target: `event-${e.id}`,
-      //   } as History);
-      // }
+        historyEvents.push({
+          content: content,
+          embedding: embeded,
+          target: `event-${e.id}`,
+        } as History);
+      }
 
       const result = await this._repo.addData(historyEvents);
 
       return ApiResp.Ok({
-        data: result,
+        data: result.length,
       });
     }
 
@@ -71,13 +71,47 @@ export class GenAIService {
       return ApiResp.BadRequest("Search field missing");
     }
 
-    const embed = await this._geminiService.embedText(data.search);
+    const embed = await this._geminiService.hfEmbedding(data.search);
 
-    const hisData = await this._historyRepo.vectorSearchData(embed.values, 5);
+    const hisData = await this._historyRepo.vectorSearchData(
+      embed as number[],
+      5,
+    );
 
     return ApiResp.Ok({
       data: hisData,
-      vector: embed.values,
+      // vector: embed.values,
+      // response,
+    });
+  }
+
+  async handleAddDataToMongo(data: {
+    type: string;
+    id: string;
+    content: string;
+  }) {
+    const embed = await this._geminiService.hfEmbedding(data.content);
+
+    const historyData = {
+      content: data.content,
+      target: `${data.type}-${data.id}`,
+      embedding: embed,
+    } as History;
+
+    const exist = await this._repo.getByTarget(`${data.type}-${data.id}`);
+
+    if (exist) {
+      const result = await this._repo.updateData(exist.id, historyData);
+
+      return ApiResp.Ok({
+        data: result,
+      });
+    }
+
+    const result = await this._repo.addData([historyData]);
+
+    return ApiResp.Ok({
+      data: result,
     });
   }
 }

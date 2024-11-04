@@ -30,6 +30,12 @@ export class FilterFigureDto {
 
   @ApiProperty({ required: false })
   status: DataStatus;
+
+  @ApiProperty({ required: false })
+  eraId: string;
+
+  @ApiProperty({ required: false })
+  eventId: string;
 }
 
 export function toFilterModel(dto: FilterFigureDto): Prisma.FigureUpdateInput {
@@ -46,6 +52,16 @@ export function toFilterModel(dto: FilterFigureDto): Prisma.FigureUpdateInput {
     deathDate: dto?.deathDate ? new Date(dto?.deathDate) : undefined,
     thumbnail: dto?.thumbnail,
     status: dto?.status,
+    eras: dto?.eraId
+      ? {
+          some: { id: dto.eraId },
+        }
+      : undefined,
+    events: dto?.eventId
+      ? {
+          some: { id: dto.eventId },
+        }
+      : undefined,
   };
 
   return removeUndefinedFields(model) as Prisma.FigureUpdateInput;

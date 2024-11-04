@@ -10,6 +10,7 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
 import { CreateEraDto, toModel } from "./dtos/create-era.dto";
 import { toUpdateModel, UpdateEraDto } from "./dtos/update-era.dto";
+import { HistoryRepository } from "@/infrastructure/repository/history.repository";
 
 @Injectable()
 export class EraService {
@@ -18,6 +19,7 @@ export class EraService {
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _eraRepo: EraRepository,
+    private readonly _historyRepo: HistoryRepository,
   ) {
     this._logger.setContext("EraServices");
   }
@@ -88,6 +90,22 @@ export class EraService {
     const model = toUpdateModel(data, payload.sub);
 
     const era = await this._eraRepo.updateEraById({ id }, model);
+
+    if (era.status === DataStatus.PUBLISHED) {
+      this._logger.log("[UpdateEra] Sync data to history mongodb");
+      try {
+        await this._historyRepo.syncData({
+          id: era.id,
+          type: "era",
+          content: `${era.name} - ${era.description.slice(0, 300)}`,
+        });
+      } catch (error) {
+        this._logger.error(
+          "[UpdateEra] Error when sync data to history",
+          error,
+        );
+      }
+    }
 
     return ApiResp.Ok({
       era,

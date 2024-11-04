@@ -27,6 +27,10 @@ export class ArtifactRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
+      include: {
+        eras: true,
+        events: true,
+      },
     } satisfies Prisma.ArtifactFindManyArgs;
 
     const [artifacts, total] = await this.dbCtx.$transaction([
@@ -42,7 +46,13 @@ export class ArtifactRepository {
   }
 
   async findArtifactById(id: Prisma.ArtifactWhereUniqueInput) {
-    return this.dbCtx.artifact.findFirst({ where: id });
+    return this.dbCtx.artifact.findFirst({
+      where: id,
+      include: {
+        eras: true,
+        events: true,
+      },
+    });
   }
 
   async createArtifact(data: Prisma.ArtifactCreateInput) {

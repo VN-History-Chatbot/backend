@@ -10,6 +10,7 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
 import { CreatePlaceDto, toModel } from "./dtos/create-place.dto";
 import { toUpdateModel, UpdatePlaceDto } from "./dtos/update-place.dto";
+import { HistoryRepository } from "@/infrastructure/repository/history.repository";
 
 @Injectable()
 export class PlaceService {
@@ -18,6 +19,7 @@ export class PlaceService {
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _placeRepo: PlaceRepository,
+    private readonly _historyRepo: HistoryRepository,
   ) {
     this._logger.setContext("PlaceServices");
   }
@@ -88,6 +90,22 @@ export class PlaceService {
     const model = toUpdateModel(data, payload.sub);
 
     const place = await this._placeRepo.updatePlaceById({ id }, model);
+
+    if (place.status === DataStatus.PUBLISHED) {
+      this._logger.log("[UpdatePlace] Sync data to history mongodb");
+      try {
+        await this._historyRepo.syncData({
+          id: place.id,
+          type: "place",
+          content: `${place.name} - ${place.description.slice(0, 300)}`,
+        });
+      } catch (error) {
+        this._logger.error(
+          "[UpdatePlace] Error when sync data to history",
+          error,
+        );
+      }
+    }
 
     return ApiResp.Ok({
       place,

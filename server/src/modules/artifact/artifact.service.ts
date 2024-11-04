@@ -10,6 +10,7 @@ import { DataStatus, Prisma } from "@prisma/client";
 import { get } from "lodash";
 import { CreateArtifactDto, toModel } from "./dtos/create-artifact.dto";
 import { toUpdateModel, UpdateArtifactDto } from "./dtos/update-artifact.dto";
+import { HistoryRepository } from "@/infrastructure/repository/history.repository";
 
 @Injectable()
 export class ArtifactService {
@@ -18,6 +19,7 @@ export class ArtifactService {
     private readonly _logger: LoggerService,
     private readonly _cache: CacheService,
     private readonly _artifactRepo: ArtifactRepository,
+    private readonly _historyRepo: HistoryRepository,
   ) {
     this._logger.setContext("ArtifactServices");
   }
@@ -88,6 +90,22 @@ export class ArtifactService {
     const model = toUpdateModel(data, payload.sub);
 
     const artifact = await this._artifactRepo.updateArtifactById({ id }, model);
+
+    if (artifact.status === DataStatus.PUBLISHED) {
+      this._logger.log("[UpdateArtifact] Sync data to history mongodb");
+      try {
+        await this._historyRepo.syncData({
+          id: artifact.id,
+          type: "artifact",
+          content: `${artifact.name} - ${artifact.description.slice(0, 300)}`,
+        });
+      } catch (error) {
+        this._logger.error(
+          "[UpdateArtifact] Error when sync data to history",
+          error,
+        );
+      }
+    }
 
     return ApiResp.Ok({
       artifact,
