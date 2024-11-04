@@ -19,6 +19,12 @@ export class HistoryRepository {
     return result;
   }
 
+  async getByTarget(target: string) {
+    const result = await this.historyModel.findOne({ target });
+
+    return result;
+  }
+
   async vectorSearchData(vector: number[], limit: number) {
     const result = await this.historyModel.aggregate([
       {
@@ -38,6 +44,39 @@ export class HistoryRepository {
         },
       },
     ]);
+
+    return result;
+  }
+
+  async updateData(id: string, data: Partial<History>) {
+    const result = await this.historyModel.findByIdAndUpdate(id, data, {
+      new: true,
+    });
+
+    return result;
+  }
+
+  async syncData(data: {
+    id: string;
+    type: string;
+    content: string;
+    embed: number[];
+  }) {
+    const historyData = {
+      content: data.content,
+      target: `${data.type}-${data.id}`,
+      embedding: data.embed,
+    } as History;
+
+    const exist = await this.getByTarget(`${data.type}-${data.id}`);
+
+    if (exist) {
+      const result = await this.updateData(exist.id, historyData);
+
+      return result;
+    }
+
+    const result = await this.addData([historyData]);
 
     return result;
   }

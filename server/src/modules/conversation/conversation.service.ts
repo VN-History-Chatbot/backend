@@ -124,13 +124,13 @@ export class ConversationService {
     const message = promptResp.response.text();
 
     // search
-    const embeddedPromptResp = await this._geminiService.embedText(
+    const embeddedPromptResp = await this._geminiService.hfEmbedding(
       data.message,
     );
 
     const vectorResult = await this._historyRepo.vectorSearchData(
-      embeddedPromptResp.values,
-      5,
+      embeddedPromptResp as number[],
+      data.searchLimit || 5,
     );
 
     const metadata = {

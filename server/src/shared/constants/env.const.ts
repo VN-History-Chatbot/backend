@@ -36,3 +36,7 @@ export const GOOGLE_LOGIN_URL = process.env.GOOGLE_LOGIN_URL;
 
 // Mongodb
 export const MONGO_HOST = process.env.MONGO_HOST;
+
+// AI
+export const HF_TOKEN = process.env.HF_TOKEN;
+export const OPENAI_TOKEN = process.env.OPENAI_TOKEN;

@@ -1,5 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, MinLength, IsOptional } from "class-validator";
+import {
+  IsString,
+  MinLength,
+  IsOptional,
+  IsNumber,
+  Max,
+  Min,
+} from "class-validator";
 export class ChatReqDto {
   @ApiProperty()
   @IsString()
@@ -14,4 +21,11 @@ export class ChatReqDto {
   @ApiProperty()
   @IsOptional()
   metadata?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  @Max(20)
+  @Min(0)
+  searchLimit?: number;
 }
