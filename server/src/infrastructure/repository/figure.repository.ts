@@ -27,6 +27,10 @@ export class FigureRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
+      include: {
+        eras: true,
+        events: true,
+      },
     } satisfies Prisma.FigureFindManyArgs;
 
     const [figures, total] = await this.dbCtx.$transaction([
@@ -42,7 +46,13 @@ export class FigureRepository {
   }
 
   async findFigureById(id: Prisma.FigureWhereUniqueInput) {
-    return this.dbCtx.figure.findFirst({ where: id });
+    return this.dbCtx.figure.findFirst({
+      where: id,
+      include: {
+        eras: true,
+        events: true,
+      },
+    });
   }
 
   async createFigure(data: Prisma.FigureCreateInput) {
