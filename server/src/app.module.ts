@@ -8,6 +8,7 @@ import { LoggerModule } from "./core/log/log.service";
 import { GeminiModule } from "./core/gemini/gemini.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { MONGO_HOST } from "./shared/constants/env.const";
+import { FirebaseModule } from "./core/firebase/firebase.service";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MONGO_HOST } from "./shared/constants/env.const";
     LoggerModule,
     GeminiModule,
     MongooseModule.forRoot(MONGO_HOST),
+    FirebaseModule,
   ],
   providers: [GoogleStrategy],
 })

@@ -6,3 +6,8 @@ export class GgAuthReqDto {
   @IsOptional()
   redirect?: string;
 }
+
+export class FirebaseAuthReqDto {
+  @ApiProperty()
+  token: string;
+}

@@ -12,7 +12,7 @@ import { AuthService } from "./auth.service";
 import { ApiTags } from "@nestjs/swagger";
 import { GoogleOAuthGuard } from "@/core/oauth/google.guard";
 import { GetRefreshTokenDto } from "./dtos/refresh-token.dto";
-import { GgAuthReqDto } from "./dtos/gg-auth.dto";
+import { FirebaseAuthReqDto, GgAuthReqDto } from "./dtos/gg-auth.dto";
 
 @ApiTags("Auth")
 @Controller("api/v1/auth")
@@ -52,5 +52,10 @@ export class AuthController {
   @Post("force-logout")
   async forceLogout(@Query("userId") userId: string) {
     return await this._service.handleForceLogout(userId);
+  }
+
+  @Post("login-firebase")
+  async loginFirebase(@Body() body: FirebaseAuthReqDto) {
+    return await this._service.handleFirebaseLogin(body);
   }
 }
