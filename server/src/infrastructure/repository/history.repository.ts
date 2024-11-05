@@ -84,10 +84,4 @@ export class HistoryRepository {
 
     return result.length;
   }
-
-  async deleteByTarget(target: string) {
-    const result = await this.historyModel.deleteOne({ target });
-
-    return result;
-  }
 }
