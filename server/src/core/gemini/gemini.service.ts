@@ -13,7 +13,11 @@ export class GeminiService {
   constructor() {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-    this._model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    this._model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction:
+        "Tôi là 1 chuyên gia về Lịch sử Việt Nam, hãy hỏi tôi về lịch sử Việt Nam nhé!",
+    });
 
     this._embedModel = genAI.getGenerativeModel({
       model: "text-embedding-004",

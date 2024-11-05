@@ -192,73 +192,80 @@ export class AuthService {
   }
 
   async handleFirebaseLogin(body: FirebaseAuthReqDto) {
-    const user = await this._firebase.verifyToken(body.token);
+    try {
+      const user = await this._firebase.verifyToken(body.token);
 
-    if (!user || !user.email) {
-      this._logger.error("[FirebaseLogin]: Invalid token");
-      return ApiResp.Unauthorized("Invalid token");
-    }
-
-    const email = user.email;
-    const name = user.sub;
-    const picture = user.picture;
-
-    const u = await this._userRepo.getUserByEmail(email);
-
-    if (!u) {
-      const created = await this._userRepo.createUser({
-        email: email,
-        fullName: name,
-        avatar: picture,
-        isActive: true,
-        lastAccess: new Date(),
-        Role: {
-          connect: {
-            id: ROLE_USER,
-          },
-        },
-      });
-
-      if (!created) {
-        this._logger.error("[FirebaseLogin]: Failed to create user");
-
-        return ApiResp.InternalServerError("Failed to create user");
+      if (!user || !user.email) {
+        this._logger.error("[FirebaseLogin]: Invalid token");
+        return ApiResp.Unauthorized("Invalid token");
       }
 
-      u.id = created.id;
-    }
+      const email = user.email;
+      const name = user.sub;
+      const picture = user.picture;
 
-    const rtk = await this._jwt.generateRefreshToken();
-    const sessionId = randomString(32);
-    const atkExpired = JWT_AT_EXPIRED * 60 * 24 * 30;
-    const rtkExpired = JWT_AT_EXPIRED * 60 * 24 * 30 * 2;
-    const atk = await this._jwt.generateAccessToken(
-      u.id,
-      sessionId,
-      atkExpired,
-      false,
-    );
+      const u = await this._userRepo.getUserByEmail(email);
 
-    await this._cache.set(
-      `rft:${u.id}:${rtk}`,
-      {
+      if (!u) {
+        const created = await this._userRepo.createUser({
+          email: email,
+          fullName: name,
+          avatar: picture,
+          isActive: true,
+          lastAccess: new Date(),
+          Role: {
+            connect: {
+              id: ROLE_USER,
+            },
+          },
+        });
+
+        if (!created) {
+          this._logger.error("[FirebaseLogin]: Failed to create user");
+
+          return ApiResp.InternalServerError("Failed to create user");
+        }
+
+        u.id = created.id;
+      }
+
+      const rtk = await this._jwt.generateRefreshToken();
+      const sessionId = randomString(32);
+      const atkExpired = JWT_AT_EXPIRED * 60 * 24 * 30;
+      const rtkExpired = JWT_AT_EXPIRED * 60 * 24 * 30 * 2;
+      const atk = await this._jwt.generateAccessToken(
+        u.id,
+        sessionId,
+        atkExpired,
+        false,
+      );
+
+      await this._cache.set(
+        `rft:${u.id}:${rtk}`,
+        {
+          userId: u.id,
+          sessionId: sessionId,
+        },
+        rtkExpired,
+      );
+
+      const now = new Date().getTime();
+      const atExpAt = now + atkExpired * 1000;
+      const rtExpAt = now + rtkExpired * 1000;
+
+      return ApiResp.Ok({
         userId: u.id,
         sessionId: sessionId,
-      },
-      rtkExpired,
-    );
-
-    const now = new Date().getTime();
-    const atExpAt = now + atkExpired * 1000;
-    const rtExpAt = now + rtkExpired * 1000;
-
-    return ApiResp.Ok({
-      userId: u.id,
-      sessionId: sessionId,
-      accessToken: atk,
-      refreshToken: rtk,
-      accessTokenExpiredAt: atExpAt,
-      refreshTokenExpiredAt: rtExpAt,
-    });
+        accessToken: atk,
+        refreshToken: rtk,
+        accessTokenExpiredAt: atExpAt,
+        refreshTokenExpiredAt: rtExpAt,
+      });
+    } catch (error: any) {
+      this._logger.error("[FirebaseLogin]: Invalid token");
+      return ApiResp.Unauthorized(
+        error.message ? error.message : "Invalid token",
+      );
+    }
   }
 }
