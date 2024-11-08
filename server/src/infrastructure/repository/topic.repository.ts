@@ -27,10 +27,6 @@ export class TopicRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: {
-        eras: true,
-        events: true,
-      },
     } satisfies Prisma.TopicFindManyArgs;
 
     const [topics, total] = await this.dbCtx.$transaction([

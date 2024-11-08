@@ -27,10 +27,6 @@ export class FigureRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: {
-        eras: true,
-        events: true,
-      },
     } satisfies Prisma.FigureFindManyArgs;
 
     const [figures, total] = await this.dbCtx.$transaction([

@@ -27,12 +27,6 @@ export class EventRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: {
-        eras: true,
-        figures: true,
-        artifacts: true,
-        places: true,
-      },
     } satisfies Prisma.EventFindManyArgs;
 
     const [events, total] = await this.dbCtx.$transaction([

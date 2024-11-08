@@ -17,6 +17,7 @@ import { PlaceRepository } from "@/infrastructure/repository/place.repository";
 import { TopicRepository } from "@/infrastructure/repository/topic.repository";
 import { EventRepository } from "@/infrastructure/repository/event.repository";
 import { HistoryRepository } from "@/infrastructure/repository/history.repository";
+import { isJSON } from "class-validator";
 
 @Injectable()
 export class ConversationService {
@@ -49,7 +50,7 @@ export class ConversationService {
     const conversations = await this._repo.getConversationByUserId(payload.sub);
 
     return ApiResp.Ok({
-      conversations,
+      conversations: conversations,
     });
   }
 
@@ -181,7 +182,10 @@ export class ConversationService {
       await this._repo.getMessagesByConversationId(conversationId);
 
     return ApiResp.Ok({
-      messages,
+      messages: messages.map((msg) => ({
+        ...msg,
+        metadata: isJSON(msg.metadata) ? JSON.parse(msg.metadata) : null,
+      })),
     });
   }
 

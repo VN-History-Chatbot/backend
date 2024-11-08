@@ -27,13 +27,6 @@ export class EraRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: {
-        topics: true,
-        artifacts: true,
-        events: true,
-        figures: true,
-        places: true,
-      },
     } satisfies Prisma.EraFindManyArgs;
 
     const [eras, total] = await this.dbCtx.$transaction([

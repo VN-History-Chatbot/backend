@@ -27,10 +27,6 @@ export class PlaceRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: {
-        eras: true,
-        events: true,
-      },
     } satisfies Prisma.PlaceFindManyArgs;
 
     const [places, total] = await this.dbCtx.$transaction([

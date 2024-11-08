@@ -27,10 +27,6 @@ export class ArtifactRepository {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: {
-        eras: true,
-        events: true,
-      },
     } satisfies Prisma.ArtifactFindManyArgs;
 
     const [artifacts, total] = await this.dbCtx.$transaction([
