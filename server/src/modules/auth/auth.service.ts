@@ -204,7 +204,7 @@ export class AuthService {
       const name = user.sub;
       const picture = user.picture;
 
-      const u = await this._userRepo.getUserByEmail(email);
+      let u = await this._userRepo.getUserByEmail(email);
 
       if (!u) {
         const created = await this._userRepo.createUser({
@@ -226,7 +226,7 @@ export class AuthService {
           return ApiResp.InternalServerError("Failed to create user");
         }
 
-        u.id = created.id;
+        u = created;
       }
 
       const rtk = await this._jwt.generateRefreshToken();
