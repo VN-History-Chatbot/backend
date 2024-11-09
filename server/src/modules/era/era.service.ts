@@ -30,6 +30,7 @@ export class EraService {
     filter: Prisma.EraUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
+    ids?: string[],
   ) {
     this._logger.log("[GetEras]");
 
@@ -39,6 +40,7 @@ export class EraService {
       filter,
       sortBy,
       sortOrder,
+      ids,
     );
 
     return ApiResp.Ok({

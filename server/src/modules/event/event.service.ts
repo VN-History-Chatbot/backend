@@ -30,6 +30,7 @@ export class EventService {
     filter: Prisma.EventUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
+    ids?: string[],
   ) {
     this._logger.log("[GetEvents]");
 
@@ -39,6 +40,7 @@ export class EventService {
       filter,
       sortBy,
       sortOrder,
+      ids,
     );
 
     return ApiResp.Ok({

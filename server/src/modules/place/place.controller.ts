@@ -36,12 +36,17 @@ export class PlaceController {
     example: SortOrder.DESC,
   })
   @ApiFilterQuery("filter", FilterPlaceDto)
+  @ApiQuery({
+    name: "ids",
+    required: false,
+  })
   async getPlaces(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
     @Query("filter") filter: FilterPlaceDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
+    @Query("ids") ids: string[],
   ) {
     return await this._service.handleGetPlaces(
       page,
@@ -49,6 +54,7 @@ export class PlaceController {
       toFilterModel(filter),
       sortBy,
       sortOrder,
+      ids,
     );
   }
 

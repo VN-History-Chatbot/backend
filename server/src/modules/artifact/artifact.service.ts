@@ -30,6 +30,7 @@ export class ArtifactService {
     filter: Prisma.ArtifactUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
+    ids: string[],
   ) {
     this._logger.log("[GetArtifacts]");
 
@@ -39,6 +40,7 @@ export class ArtifactService {
       filter,
       sortBy,
       sortOrder,
+      ids,
     );
 
     return ApiResp.Ok({

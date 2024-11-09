@@ -36,12 +36,17 @@ export class EventController {
     example: SortOrder.DESC,
   })
   @ApiFilterQuery("filter", FilterEventDto)
+  @ApiQuery({
+    name: "ids",
+    required: false,
+  })
   async getEvents(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
     @Query("filter") filter: FilterEventDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
+    @Query("ids") ids: string[],
   ) {
     return await this._service.handleGetEvents(
       page,
@@ -49,6 +54,7 @@ export class EventController {
       toFilterModel(filter),
       sortBy,
       sortOrder,
+      ids,
     );
   }
 

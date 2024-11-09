@@ -30,6 +30,7 @@ export class FigureService {
     filter: Prisma.FigureUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
+    ids: string[],
   ) {
     this._logger.log("[GetFigures]");
 
@@ -39,6 +40,7 @@ export class FigureService {
       filter,
       sortBy,
       sortOrder,
+      ids,
     );
 
     return ApiResp.Ok({

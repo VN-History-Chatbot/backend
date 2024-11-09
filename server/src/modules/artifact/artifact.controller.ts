@@ -36,12 +36,17 @@ export class ArtifactController {
     example: SortOrder.DESC,
   })
   @ApiFilterQuery("filter", FilterArtifactDto)
+  @ApiQuery({
+    name: "ids",
+    required: false,
+  })
   async getArtifacts(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
     @Query("filter") filter: FilterArtifactDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
+    @Query("ids") ids: string[],
   ) {
     return await this._service.handleGetArtifacts(
       page,
@@ -49,6 +54,7 @@ export class ArtifactController {
       toFilterModel(filter),
       sortBy,
       sortOrder,
+      ids,
     );
   }
 

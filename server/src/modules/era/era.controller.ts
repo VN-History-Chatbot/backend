@@ -36,12 +36,17 @@ export class EraController {
     example: SortOrder.DESC,
   })
   @ApiFilterQuery("filter", FilterEraDto)
+  @ApiQuery({
+    name: "ids",
+    required: false,
+  })
   async getEras(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
     @Query("filter") filter: FilterEraDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
+    @Query("ids") ids: string[],
   ) {
     return await this._service.handleGetEras(
       page,

@@ -36,12 +36,17 @@ export class FigureController {
     example: SortOrder.DESC,
   })
   @ApiFilterQuery("filter", FilterFigureDto)
+  @ApiQuery({
+    name: "ids",
+    required: false,
+  })
   async getFigures(
     @Query("page") page: number,
     @Query("pageSize") pageSize: number,
     @Query("filter") filter: FilterFigureDto,
     @Query("sortBy") sortBy: string,
     @Query("sortOrder") sortOrder: SortOrder,
+    @Query("ids") ids: string[],
   ) {
     return await this._service.handleGetFigures(
       page,
@@ -49,6 +54,7 @@ export class FigureController {
       toFilterModel(filter),
       sortBy,
       sortOrder,
+      ids,
     );
   }
 

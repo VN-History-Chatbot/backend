@@ -3,6 +3,7 @@ import { filterObjectToPrismaWhere } from "@/shared/helpers/prisma.helper";
 import { Injectable } from "@nestjs/common";
 import { DataStatus, Prisma } from "@prisma/client";
 import { DbService } from "../database/db.service";
+import { isArray } from "util";
 
 @Injectable()
 export class PlaceRepository {
@@ -14,11 +15,22 @@ export class PlaceRepository {
     filter: Prisma.PlaceUpdateInput,
     sortBy: string = "updatedAt",
     sortOrder: SortOrder = SortOrder.DESC,
+    ids?: string[],
   ) {
     const skip = (page - 1) * pageSize;
 
     // Transform filter object into Prisma where clause
     const where = filterObjectToPrismaWhere(filter);
+
+    if (ids && ids.length > 0) {
+      if (isArray(ids)) {
+        where["id"] = {
+          in: ids,
+        };
+      } else {
+        where["id"] = ids;
+      }
+    }
 
     const query = {
       where,

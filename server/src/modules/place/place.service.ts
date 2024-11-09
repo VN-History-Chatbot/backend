@@ -30,6 +30,7 @@ export class PlaceService {
     filter: Prisma.PlaceUpdateInput,
     sortBy: string,
     sortOrder: SortOrder,
+    ids: string[],
   ) {
     this._logger.log("[GetPlaces]");
 
@@ -39,6 +40,7 @@ export class PlaceService {
       filter,
       sortBy,
       sortOrder,
+      ids,
     );
 
     return ApiResp.Ok({
