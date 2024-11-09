@@ -172,6 +172,7 @@ export class ConversationService {
     return ApiResp.Ok({
       message,
       result,
+      metadata,
     });
   }
 
