@@ -54,6 +54,7 @@ export class EraController {
       toFilterModel(filter),
       sortBy,
       sortOrder,
+      ids,
     );
   }
 
